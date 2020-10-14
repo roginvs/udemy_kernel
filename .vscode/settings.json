@@ -1,9 +1,10 @@
 {
-    "files.associations": {
-        "memory.h": "c",
-        "stdbool.h": "c",
-        "*.tcc": "c",
-        "algorithm": "c"
-    },
-    "editor.formatOnSave": true
+  "files.associations": {
+    "memory.h": "c",
+    "stdbool.h": "c",
+    "*.tcc": "c",
+    "algorithm": "c",
+    "fstream": "c"
+  },
+  "editor.formatOnSave": true
 }

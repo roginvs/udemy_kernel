@@ -12,4 +12,7 @@ void print(const char *str);
 #include <stdint.h>
 void terminal_writedword(uint32_t d, uint8_t color);
 
+#define ERROR(value) (void*)(value)
+#define ERROR_I(value) (int)(value)
+#define ISERR(value) ((int)value < 0)
 #endif
