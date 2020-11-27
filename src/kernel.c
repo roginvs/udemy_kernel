@@ -7,6 +7,7 @@
 #include "memory/paging/paging.h"
 #include "memory/memory.h"
 #include "disk/disk.h"
+#include "keyboard/keyboard.h"
 #include "string/string.h"
 #include "isr80h/isr80h.h"
 #include "task/task.h"
@@ -141,10 +142,14 @@ void kernel_main()
     // TODO: Enable me when first program loads
     // enable_interrupts();
 
+    // Initialize all the system keyboards
+    keyboard_init();
+
     print("Kernel loaded\n");
     print_art();
 
     struct process *process = 0;
+
     int res = process_load("0:/blank.bin", &process);
     if (res != PEACHOS_ALL_OK)
         panic("Failed to load blank.bin\n");
