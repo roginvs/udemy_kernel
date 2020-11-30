@@ -1,4 +1,4 @@
-FILES = ./build/terminal.o ./build/fs/fat/fat32.o ./build/kernel.asm.o ./build/kernel.o ./build/isr80h/isr80h.o ./build/keyboard/keyboard.o ./build/isr80h/io.o ./build/isr80h/misc.o ./build/disk/disk.o ./build/disk/streamer.o ./build/task/process.o ./build/task/task.o ./build/task/task.asm.o ./build/task/tss.asm.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o ./build/string/string.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/memory/memory.o ./build/io/io.asm.o ./build/gdt/gdt.o ./build/gdt/gdt.asm.o ./build/memory/heap/heap.o ./build/memory/heap/kheap.o ./build/memory/paging/paging.o ./build/memory/paging/paging.asm.o
+FILES = ./build/terminal.o ./build/fs/fat/fat32.o ./build/kernel.asm.o ./build/kernel.o ./build/isr80h/isr80h.o ./build/keyboard/keyboard.o ./build/keyboard/classic.o ./build/isr80h/io.o ./build/isr80h/misc.o ./build/disk/disk.o ./build/disk/streamer.o ./build/task/process.o ./build/task/task.o ./build/task/task.asm.o ./build/task/tss.asm.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o ./build/string/string.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/memory/memory.o ./build/io/io.asm.o ./build/gdt/gdt.o ./build/gdt/gdt.asm.o ./build/memory/heap/heap.o ./build/memory/heap/kheap.o ./build/memory/paging/paging.o ./build/memory/paging/paging.asm.o
 INCLUDES = -I./src
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -66,6 +66,10 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 ./build/idt/idt.asm.o: ./src/idt/idt.asm
 	mkdir -p ./build/idt
 	nasm -f elf -g ./src/idt/idt.asm -o ./build/idt/idt.asm.o
+
+./build/keyboard/classic.o: ./src/keyboard/classic.c
+	mkdir -p ./build/keyboard
+	i686-elf-gcc $(INCLUDES) -I./src/keyboard $(FLAGS) -std=gnu99 -c ./src/keyboard/classic.c -o ./build/keyboard/classic.o
 
 ./build/isr80h/io.o: ./src/isr80h/io.c
 	mkdir -p ./build/isr80h
