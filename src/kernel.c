@@ -95,11 +95,6 @@ void print_art()
     }
 }
 
-void pic_timer_callback(struct interrupt_frame *frame)
-{
-    print("Timer activated\n");
-}
-
 void kernel_main()
 {
     terminal_initialize();
@@ -160,8 +155,6 @@ void kernel_main()
     int res = process_load_switch("0:/blank.bin", &process);
     if (res != PEACHOS_ALL_OK)
         panic("Failed to load blank.bin\n");
-
-    keyboard_push('A');
 
     task_run_first_ever_task();
 
