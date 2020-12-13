@@ -24,7 +24,7 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 	sudo cp ./art2.txt /mnt/d/folderA/folderB
 	sudo cp ./art3.txt /mnt/d/folderA/folderB
 	sudo cp ./art.txt /mnt/d
-	sudo cp ./programs/blank/blank.bin /mnt/d
+	sudo cp ./programs/blank/blank.elf /mnt/d
 	ls -la /mnt/d
 	sudo umount /mnt/d
 
