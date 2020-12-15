@@ -3,6 +3,7 @@
 ; TODO What this "function" do?
 ; Improtant for dynamic linking? What is the difference if no ":function"?
 global print:function
+global getkey:function
 
 ; void print(const char* filename)
 print:
@@ -12,6 +13,14 @@ print:
     mov eax, 1 ; Command print
     int 0x80
     add esp, 4
-
     pop ebp
-    ret 
+    ret
+
+; int getkey()
+getkey:
+    push ebp
+    mov ebp, esp
+    mov eax, 2 ; Command getkey
+    int 0x80
+    pop ebp
+    ret
