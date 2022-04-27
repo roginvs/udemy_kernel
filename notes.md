@@ -157,3 +157,8 @@ https://wiki.osdev.org/Memory_Map_(x86)
 ## Cherry-pick commits
 
 git remote add nibblebits https://github.com/nibblebits/PeachOS.git
+git pull nibblebits
+
+https://github.com/nibblebits/PeachOS/commit/9d38819b6985ea5c154382dbc34d2635925c1983
+
+git cherry-pick 9d38819b6985ea5c154382dbc34d2635925c1983
