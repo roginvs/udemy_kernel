@@ -160,5 +160,7 @@ git remote add nibblebits https://github.com/nibblebits/PeachOS.git
 git pull nibblebits
 
 https://github.com/nibblebits/PeachOS/commit/9d38819b6985ea5c154382dbc34d2635925c1983
+https://github.com/nibblebits/PeachOS/commit/02d289125b45d59ff00fa12dd3a932fc0786241c
 
 git cherry-pick 9d38819b6985ea5c154382dbc34d2635925c1983
+git cherry-pick 02d289125b45d59ff00fa12dd3a932fc0786241c
