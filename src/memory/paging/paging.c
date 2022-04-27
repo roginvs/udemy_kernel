@@ -1,0 +1,172 @@
+#include "paging.h"
+#include "memory/heap/kheap.h"
+#include "kernel.h"
+#include "status.h"
+
+void paging_load_directory(uint32_t *directory);
+
+static uint32_t *current_directory = 0;
+
+static void paging_new_4gb_validate(struct paging_4gb_chunk *chunk_4gb)
+{
+    uint32_t *directory_table = chunk_4gb->directory_entry;
+
+    uint32_t *table_0 = (uint32_t *)(directory_table[0] & 0xFFFFF000);
+    if ((table_0[0] & 0xFFFFF000) != 0)
+    {
+        print("\nERROR: Table 0 entry 0\n");
+        return;
+    }
+    if ((table_0[1] & 0xFFFFF000) != 4096)
+    {
+        print("\nERROR: Table 0 entry 1\n");
+        return;
+    }
+    if ((table_0[1023] & 0xFFFFF000) != 4096 * 1023)
+    {
+        print("\nERROR: Table 0 entry 1023\n");
+        return;
+    }
+
+    uint32_t *table_1 = (uint32_t *)(directory_table[1] & 0xFFFFF000);
+    if ((table_1[0] & 0xFFFFF000) != 4096 * 1024 * 1 + 0)
+    {
+        print("\nERROR: Table 1 entry 0\n");
+        return;
+    }
+    if ((table_1[1] & 0xFFFFF000) != 4096 * 1024 * 1 + 4096)
+    {
+        print("\nERROR: Table 1 entry 1\n");
+        return;
+    }
+    if ((table_1[1023] & 0xFFFFF000) != 4096 * 1024 * 1 + 4096 * 1023)
+    {
+        print("\nERROR: Table 1 entry 1023\n");
+        return;
+    }
+
+    uint32_t *table_1023 = (uint32_t *)(directory_table[1023] & 0xFFFFF000);
+    if ((table_1023[0] & 0xFFFFF000) != (uint32_t)(4096) * 1024 * 1023 + 0)
+    {
+        print("\nERROR: Table 1023 entry 0\n");
+        return;
+    }
+    if ((table_1023[1] & 0xFFFFF000) != (uint32_t)4096 * 1024 * 1023 + 4096)
+    {
+        print("\nERROR: Table 1023 entry 1\n");
+        return;
+    }
+    if ((table_1023[1023] & 0xFFFFF000) != (uint32_t)4096 * 1024 * 1023 + 4096 * 1023)
+    {
+        print("\nERROR: Table 1023 entry 1023\n");
+        return;
+    }
+    print("\npaging_new_4gb is ok\n");
+}
+
+struct paging_4gb_chunk *paging_new_4gb(uint8_t flags)
+{
+    uint32_t *directory = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
+    int offset = 0;
+    // print("Directory address = ");
+    // terminal_writedword((uint32_t)directory, 15);
+    // print("\n");
+
+    for (int i = 0; i < PAGING_TOTAL_ENTRIES_PER_TABLE; i++)
+    {
+        uint32_t *entry = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
+
+        /*
+        if (i == 0)
+        {
+            print("First page address address = ");
+            terminal_writedword((uint32_t)entry, 15);
+            print("\n");
+        }
+        if (i == 1)
+        {
+            print("Second page address address = ");
+            terminal_writedword((uint32_t)entry, 15);
+            print("\n");
+        }
+        */
+
+        for (int b = 0; b < PAGING_TOTAL_ENTRIES_PER_TABLE; b++)
+        {
+            entry[b] = (offset + (b * PAGING_PAGE_SIZE)) | flags;
+        }
+        offset += (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE);
+        directory[i] = (uint32_t)entry | flags | PAGING_IS_WRITEABLE;
+    }
+
+    struct paging_4gb_chunk *chunk_4gb = kzalloc(sizeof(struct paging_4gb_chunk));
+    chunk_4gb->directory_entry = directory;
+
+    paging_new_4gb_validate(chunk_4gb);
+    return chunk_4gb;
+}
+
+void paging_switch(uint32_t *directory)
+{
+    paging_load_directory(directory);
+    current_directory = directory;
+}
+
+uint32_t *paging_4gb_chunk_get_directory(struct paging_4gb_chunk *chunk)
+{
+    return chunk->directory_entry;
+}
+
+bool paging_is_aligned(void *addr)
+{
+    return ((uint32_t)addr % PAGING_PAGE_SIZE) == 0;
+}
+
+/**
+ * Calculates what directory index and table index will hold the given address
+ */
+int paging_get_indexes(void *virtual_address, uint32_t *directory_index_out, uint32_t *table_index_out)
+{
+    int res = 0;
+    if (!paging_is_aligned(virtual_address))
+    {
+        res = -EINVARG;
+        goto out;
+    }
+
+    *directory_index_out = ((uint32_t)virtual_address / (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE));
+    *table_index_out = ((uint32_t)virtual_address % (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE) / PAGING_PAGE_SIZE);
+
+out:
+
+    return res;
+}
+
+/**
+ * Updates directory for this virtual address.
+ * val  =  physical_address & 0xFFFFF000 + flags;
+ */
+int paging_set(uint32_t *directory, void *virt, uint32_t val)
+{
+    if (!paging_is_aligned(virt))
+    {
+        return -EINVARG;
+    }
+    uint32_t directory_index = 0;
+    uint32_t table_index = 0;
+    int res = paging_get_indexes(virt, &directory_index, &table_index);
+    if (res < 0)
+    {
+        return res;
+    }
+
+    uint32_t entry = directory[directory_index];
+
+    uint32_t *table = (uint32_t *)(
+        // Extract address part, no flags needed
+        // Page table address is always aligned to 4kb
+        entry & 0xFFFFF000);
+    table[table_index] = val;
+
+    return 0;
+}
