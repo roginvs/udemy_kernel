@@ -167,7 +167,7 @@ git log --pretty="format:%H %s" nibblebits/master
 ```
 # Already cherry-picked two commits
 git cherry-pick 9d38819b6985ea5c154382dbc34d2635925c1983 # Lecture 50, merged, watched
-git cherry-pick 02d289125b45d59ff00fa12dd3a932fc0786241c # Lecture 51
+git cherry-pick 02d289125b45d59ff00fa12dd3a932fc0786241c # Lecture 51, merged, watched
 # 52
 # 53
 # 54
