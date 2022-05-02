@@ -14,7 +14,7 @@ NOP
 OEMIdentifier           db 'PEACHOS '
 BPB_BytsPerSec          dw 0x200 ; =512, Mostly ignored
 BPB_SecPerClus          db 0x4 ; Let it be 4 sectors per cluster. The legal values are 1, 2, 4, 8, 16, 32, 64, and 128.
-BPB_ResvdSecCnt         dw 200 ; (BPB_RsvdSecCnt) We are storing kernel in this reserved sectors
+BPB_ResvdSecCnt         dw 0x200 ; (BPB_RsvdSecCnt) We are storing kernel in this reserved sectors
 BPB_NumFATs             db 0x02 ; Two FAT tables total
 BPB_RootEntCnt          dw 0x0 ; zero because of FAT32
 BPB_TotSec16            dw 0x00 ; BPB_TotSec16 = 0x0 so SectorsBig is used
