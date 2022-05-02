@@ -9,9 +9,9 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	dd if=./bin/boot.bin >> ./bin/os.bin
 	dd if=./bin/kernel.bin >> ./bin/os.bin	
 
-	# We need 256 MB of space for the file system
+	# We need 128 MB of space for the file system
 	# Zeros works ok
-	dd if=/dev/zero bs=1048576 count=256 >> ./bin/os.bin 
+	dd if=/dev/zero bs=1048576 count=128 >> ./bin/os.bin 
 	sudo mkdir -p /mnt/d
 	sudo mount -t vfat ./bin/os.bin /mnt/d
 	# Copy a file over

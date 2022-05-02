@@ -179,3 +179,16 @@ git cherry-pick 80ac7483493b0b9862c1ef083d811944370ab1af # Lecture 59, merged
 git cherry-pick 75f7e7fcefeb12a47ea4734154e42e4942ecfaff # Lecture 60, merged
 git cherry-pick 20c2325acf1e243bc11ec4163e06d0e6444fdc6d # Lecture 61, merged
 ```
+
+===
+
+Make demo fat32
+
+```
+# 263636 is 0x405d4 = total sectors
+dd if=/dev/zero of=/tmp/myfat bs=512 count=263636
+mkfs.vfat -F 32 -f 2 -R 512 -s 4 -h 0 /tmp/myfat
+
+# This works?
+mkfs.vfat -F 32 -f 2 -R 496 -s 4 -h 0 /tmp/myfat
+```
