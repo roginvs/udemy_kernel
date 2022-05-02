@@ -12,14 +12,13 @@ NOP
 ; http://elm-chan.org/docs/fat_e.html
 ; FAT16 Header
 OEMIdentifier           db 'PEACHOS '
-BytesPerSector          dw 0x200 ; =512, Mostly ignored
-SectorsPerCluster       db 0x4 ; Let it be 4 sectors per cluster. The legal values are 1, 2, 4, 8, 16, 32, 64, and 128.
-BPB_ResvdSecCnt         dw 200 ; We are storing kernel in this reserved sectors
-FATCopies               db 0x02 ; Two FAT tables total
-RootDirEntries          dw 0x0 ; =64 entries in root dir, hope this is enough. 
-                                ; Each entry is 32 bytes, so 4 sectors total
-NumSectors              dw 0x00 ; BPB_TotSec16 = 0x0 so SectorsBig is used
-MediaType               db 0xF8 ; not using this
+BPB_BytsPerSec          dw 0x200 ; =512, Mostly ignored
+BPB_SecPerClus          db 0x4 ; Let it be 4 sectors per cluster. The legal values are 1, 2, 4, 8, 16, 32, 64, and 128.
+BPB_ResvdSecCnt         dw 200 ; (BPB_RsvdSecCnt) We are storing kernel in this reserved sectors
+BPB_NumFATs             db 0x02 ; Two FAT tables total
+BPB_RootEntCnt          dw 0x0 ; zero because of FAT32
+BPB_TotSec16            dw 0x00 ; BPB_TotSec16 = 0x0 so SectorsBig is used
+BPB_Media               db 0xF8 ; not using this
 BPB_FATSz16             dw 0x0 ; Zero because of FAT32, use BPB_FATSz32
 BPB_SecPerTrk           dw 0x20  ; ? why this
 BPB_NumHeads            dw 0x40 ; ? why this
@@ -32,20 +31,28 @@ BPB_NumHeads            dw 0x40 ; ? why this
 BPB_HiddSec             dd 0x00 ; 
 
  ; Because of FAT32:
+ ;  RootDirSectors=0 because it is FAT32
  ;  DataSec = TotSec – (BPB_ResvdSecCnt + (BPB_NumFATs * FATSz) + RootDirSectors);
  ;  CountofClusters = DataSec / BPB_SecPerClus;                                    
  ;  CountofClusters must be >= 65525
 
- ; So
- ; TODO: Calculate
-BPB_TotSec32             dd 0x773594  ; This is a total amount of sectors in the disk!
+ ; So in our case
+ ; CountofClusters = 65525
+ ; DataSec = 65525 * 0x4 = 262100 sectors
+ ; 
+ ; TotSec = DataSec + (BPB_ResvdSecCnt + (BPB_NumFATs * FATSz) + RootDirSectors);
+ ; TotSec = 262100 + (0x200 + 0x02 * 0x200) + 0
+BPB_TotSec32             dd 0x405d4  ; This is a total amount of sectors in the disk!
 
 ; Extended BPB (Dos 4.0)
 
 ; This field is only defined for FAT32 media and does not exist on
 ; FAT12 and FAT16 media. This field is the FAT32 32-bit count of
 ; sectors occupied by ONE FAT. BPB_FATSz16 must be 0
-BPB_FATSz32             dd 0x000000 ; TODO
+;
+; We are using 65525 clusters, 4 byte each cluster record, so
+; 65525*4 bytes = 512 sectors which is 512 bytes each = 0x200
+BPB_FATSz32             dd 0x00000200 ; 
 
 BPB_ExtFlags            dw 0x0000
 BPB_FSVer               dw 0x0000
