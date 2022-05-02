@@ -22,8 +22,6 @@
 
 int patch(char *mem)
 {
-
-    mem[0] = 0xFF;
     uint16_t BPB_BytsPerSec = *(uint16_t *)(&mem[11]);
     uint16_t BPB_RsvdSecCnt = *(uint16_t *)(&mem[14]);
 
