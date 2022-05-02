@@ -12,6 +12,7 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	# We need 128 MB of space for the file system
 	# Zeros works ok
 	dd if=/dev/zero bs=1048576 count=128 >> ./bin/os.bin 
+	gcc add-empty-fat.c -o ./bin/add-empty-fat && ./bin/add-empty-fat ./bin/os.bin
 	sudo mkdir -p /mnt/d
 	sudo mount -t vfat ./bin/os.bin /mnt/d
 	# Copy a file over

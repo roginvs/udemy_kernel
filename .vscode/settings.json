@@ -4,7 +4,8 @@
     "stdbool.h": "c",
     "*.tcc": "c",
     "algorithm": "c",
-    "fstream": "c"
+    "fstream": "c",
+    "stdlib.h": "c"
   },
   "editor.formatOnSave": true
 }
