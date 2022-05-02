@@ -12,34 +12,61 @@ NOP
 ; http://elm-chan.org/docs/fat_e.html
 ; FAT16 Header
 OEMIdentifier           db 'PEACHOS '
-BytesPerSector          dw 0x200 ; Mostly ignored
-SectorsPerCluster       db 0x80 ; Well, lets have this value
-ReservedSectors         dw 200 ; We are storing kernel in this reserved sectors
+BytesPerSector          dw 0x200 ; =512, Mostly ignored
+SectorsPerCluster       db 0x4 ; Let it be 4 sectors per cluster. The legal values are 1, 2, 4, 8, 16, 32, 64, and 128.
+BPB_ResvdSecCnt         dw 200 ; We are storing kernel in this reserved sectors
 FATCopies               db 0x02 ; Two FAT tables total
-RootDirEntries          dw 0x40 ; =64 entries in root dir, hope this is enough. 
+RootDirEntries          dw 0x0 ; =64 entries in root dir, hope this is enough. 
                                 ; Each entry is 32 bytes, so 4 sectors total
 NumSectors              dw 0x00 ; BPB_TotSec16 = 0x0 so SectorsBig is used
 MediaType               db 0xF8 ; not using this
-SectorsPerFat           dw 0x100 ; Number of sectors occupied by a FAT
-SectorsPerTrack         dw 0x20  ; ? why this
-NumberOfHeads           dw 0x40 ; ? why this
-HiddenSectors           dd 0x00 ; ? why this
-SectorsBig              dd 0x773594  ; This is a total amount of sectors in the disk!
-                                     ; 844 is minumum working value because:
-                                     ; ReservedSectors + SectorsPerFat*FATCopies + RootDirEntries*32/512
+BPB_FATSz16             dw 0x0 ; Zero because of FAT32, use BPB_FATSz32
+BPB_SecPerTrk           dw 0x20  ; ? why this
+BPB_NumHeads            dw 0x40 ; ? why this
+
+; Count of hidden sectors preceding the partition that contains this
+;FAT volume. This field is generally only relevant for media visible
+;on interrupt 0x13. This field should always be zero on media that
+;are not partitioned. Exactly what value is appropriate is operating
+;system specific.
+BPB_HiddSec             dd 0x00 ; 
+
+ ; Because of FAT32:
+ ;  DataSec = TotSec – (BPB_ResvdSecCnt + (BPB_NumFATs * FATSz) + RootDirSectors);
+ ;  CountofClusters = DataSec / BPB_SecPerClus;                                    
+ ;  CountofClusters must be >= 65525
+
+ ; So
+ ; TODO: Calculate
+BPB_TotSec32             dd 0x773594  ; This is a total amount of sectors in the disk!
 
 ; Extended BPB (Dos 4.0)
-DriveNumber             db 0x80
-WinNTBit                db 0x00
-Signature               db 0x29
-VolumeID                dd 0xD105
-VolumeIDString          db 'PEACHOS BOO'
-SystemIDString          db 'FAT16   '
 
-; Fill BIOS Parameter Block with zeros
-; times 33 db 0
-;times 0x3c-3 db 0 ; This is much more than needed
+; This field is only defined for FAT32 media and does not exist on
+; FAT12 and FAT16 media. This field is the FAT32 32-bit count of
+; sectors occupied by ONE FAT. BPB_FATSz16 must be 0
+BPB_FATSz32             dd 0x000000 ; TODO
 
+BPB_ExtFlags            dw 0x0000
+BPB_FSVer               dw 0x0000
+ ; This is set to the cluster number of the 
+ ; first cluster of the root directory, usually 2 but not required to be 2. 
+BPB_RootClus            dd 0x2 
+
+ ; . Sector number of FSINFO structure in the 
+ ; reserved area of the FAT32 volume. Usually 1. 
+BPB_FSInfo              dw 0x1  ; TODO: Write fsinfo
+BPB_BkBootSec           dw 0x0 ; No copy of boot sector
+; 12 bytes of zeros
+BPB_Reserved            db 0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
+
+BS_DrvNum               db 0x80
+BS_Reserved1            db 0
+BS_BootSig              db 0x29
+BS_VolID                dd 0xD105
+BS_VolLab               db 'PEACHOS BOO'
+BS_FilSysType           db 'FAT32   '
+                
 
 ; What is no start label?   
 start:
