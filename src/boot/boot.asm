@@ -131,7 +131,7 @@ gdt_descriptor:
 
 [BITS 32]
 load32:
-  mov eax, 1 ; Starting sector to load 
+  mov eax, 10 ; Starting sector to load 
   mov ecx, 100 ; Count
   mov edi, 0x0100000 ; 1 megabyte
   call ata_lba_read
@@ -199,3 +199,14 @@ times 510-($ - $$) db 0
 
 dw 0xAA55
 
+; First sector, FSInfo
+
+FSI_LeadSig    dd 0x41615252
+times 480 db 0 ; FSI_Reserved1
+FSI_StrucSig   dd 0x61417272
+FSI_Free_Count dd 0xFFFFFFFF
+FSI_Nxt_Free   dd 0xFFFFFFFF
+times 12 db 0 ; FSI_Reserved2
+FSI_TrailSig   dd 0xAA550000
+
+times 5120-($ - $$) db 0
