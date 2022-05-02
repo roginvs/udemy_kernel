@@ -133,16 +133,19 @@ void kernel_main()
 
     enable_interrupts();
 
-    int fd = fopen("0:/hello.txt", "r");
-    if (fd)
-    {
-        struct file_stat s;
-        fstat(fd, &s);
-        fclose(fd);
+    print("Kernel loaded");
+    /*
+        int fd = fopen("0:/hello.txt", "r");
+        if (fd)
+        {
+            struct file_stat s;
+            fstat(fd, &s);
+            fclose(fd);
 
-        print("testing\n");
-    }
-    while (1)
-    {
-    }
+            print("testing\n");
+        }
+        while (1)
+        {
+        }
+        */
 }
