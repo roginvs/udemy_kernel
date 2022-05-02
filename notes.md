@@ -169,8 +169,8 @@ git log --pretty="format:%H %s" nibblebits/master
 git cherry-pick 9d38819b6985ea5c154382dbc34d2635925c1983 # Lecture 50, merged, watched
 git cherry-pick 02d289125b45d59ff00fa12dd3a932fc0786241c # Lecture 51, merged, watched
 git cherry-pick 2f76c41c697825ae089836c77cf03d218ba6db65 # Lecture 52, merged, watched
-git cherry-pick 3ee00c3b3bd46d22b58398d67cc184843e5927e0 # Lecture 53, merged
-bd01ba97e9f635a2adb4cf332234920b65e71b02 # 54
+git cherry-pick 3ee00c3b3bd46d22b58398d67cc184843e5927e0 # Lecture 53, merged, half-watched
+git cherry-pick bd01ba97e9f635a2adb4cf332234920b65e71b02 # Lecture 54, merged
 1a889ea20762409f35f493e6e8d01b416d4d2796 # 55
 36d1e75ad918643040839688798bbc99e0812a05 # 56
 9084038f0284090d7e4ec88cd1fcdbe29017fceb # 57
