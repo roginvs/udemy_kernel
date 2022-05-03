@@ -156,6 +156,7 @@ struct fat_directory_item
 struct fat_private_file_handle
 {
     uint32_t starting_cluster;
+    uint32_t file_size;
 };
 
 uint32_t get_cluster_data_address(struct fat_private *fat_private, uint32_t cluster_id)
@@ -249,6 +250,7 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
 
     uint32_t current_cluster_id = fat_private->header.shared.fat_header_extended_32.BPB_RootClus;
     // uint8_t is_current_cluster_folder = 1;
+    uint32_t file_size;
 
     while (path)
     {
@@ -287,6 +289,7 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
                     path = path->next;
                     current_cluster_id = (item->high_16_bits_first_cluster << 16) +
                                          item->low_16_bits_first_cluster;
+                    file_size = item->filesize;
                     break;
                 }
                 // if (item->filename[0] != 'Q')
@@ -339,5 +342,7 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
     }
 
     file_handle->starting_cluster = current_cluster_id;
+    file_handle->file_size = file_size;
+
     return file_handle;
 }
