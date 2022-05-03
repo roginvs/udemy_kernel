@@ -365,14 +365,14 @@ uint32_t min(uint32_t n1, uint32_t n2)
 int fat32_read_internal(struct fat_private *fat_private, struct fat_private_file_handle *file_handle, uint32_t size, char **out_ptr)
 {
 
-    print("\n[start read] ");
+    // print("\n[start read] ");
     uint32_t bytes_left_to_read = size;
 
     while (1)
     {
-        print("\nReading from cluster = ");
-        terminal_writedword(file_handle->current_cluster, 2);
-        print("   ");
+        // print("\nReading from cluster = ");
+        // terminal_writedword(file_handle->current_cluster, 2);
+        // print("   ");
 
         //  [------+++++++]  we are in the middle of cluster
         //                   file might end before cluster ends
@@ -383,25 +383,25 @@ int fat32_read_internal(struct fat_private *fat_private, struct fat_private_file
         uint32_t how_many_to_read_from_this_cluster =
             min(min(bytes_available_in_the_cluster, bytes_in_the_file_till_the_end), bytes_left_to_read);
 
-        print("clusteravailable=");
-        terminal_writedword(bytes_available_in_the_cluster, 3);
-        print(" filetillend=");
-        terminal_writedword(bytes_in_the_file_till_the_end, 3);
-        print(" lefttoread=");
-        terminal_writedword(bytes_left_to_read, 3);
-        print(" willread=");
-        terminal_writedword(how_many_to_read_from_this_cluster, 3);
-        print(" ");
-
-        print(" position_in_cluster=");
-        terminal_writedword(file_handle->position_in_cluster, 4);
-        print(" ");
+        // print("clusteravailable=");
+        // terminal_writedword(bytes_available_in_the_cluster, 3);
+        // print(" filetillend=");
+        // terminal_writedword(bytes_in_the_file_till_the_end, 3);
+        // print(" lefttoread=");
+        // terminal_writedword(bytes_left_to_read, 3);
+        // print(" willread=");
+        // terminal_writedword(how_many_to_read_from_this_cluster, 3);
+        // print(" ");
+        //
+        // print(" position_in_cluster=");
+        // terminal_writedword(file_handle->position_in_cluster, 4);
+        // print(" ");
 
         uint32_t cluster_disk_pos = get_cluster_data_disk_pos(fat_private, file_handle->current_cluster);
 
-        print(" cluster_disk_pos=");
-        terminal_writedword(cluster_disk_pos, 4);
-        print(" ");
+        // print(" cluster_disk_pos=");
+        // terminal_writedword(cluster_disk_pos, 4);
+        // print(" ");
 
         diskstreamer_seek(fat_private->read_stream, cluster_disk_pos + file_handle->position_in_cluster);
         diskstreamer_read(fat_private->read_stream, *out_ptr, how_many_to_read_from_this_cluster);
