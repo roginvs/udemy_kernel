@@ -118,12 +118,24 @@ int fat32_resolve(struct disk *disk)
     fat_private->cluster_size_bytes = fat_private->header.primary_header.bytes_per_sector *
                                       fat_private->header.primary_header.sectors_per_cluster;
     fat_private->buf = kzalloc(fat_private->cluster_size_bytes);
-
+    if (!fat_private->buf)
+    {
+        res = -ENOMEM;
+        goto out;
+    }
 out:
 
     if (res < 0)
     {
+        if (fat_private)
+        {
+            kfree(fat_private->buf);
+        }
         kfree(fat_private);
+        if (stream)
+        {
+            diskstreamer_close(stream);
+        }
         disk->fs_private = 0;
     }
     return res;
@@ -153,6 +165,7 @@ struct fat_private_file_handle
     uint32_t file_pos;
     uint32_t current_cluster;
     uint32_t position_in_cluster;
+    /** This field only used in seek function because it is not providing disk */
     struct fat_private *fat_private;
 };
 
@@ -257,8 +270,8 @@ void get_path_directory_item(struct fat_private *fat_private, struct path_part *
 
     while (1)
     {
-        char looking_for_a_file[11];
-        transform_filename_to_fat(looking_for_a_file, path->part);
+        char file_we_are_looking_for[11];
+        transform_filename_to_fat(file_we_are_looking_for, path->part);
         uint8_t file_found = 0;
         while (1)
         {
@@ -277,7 +290,7 @@ void get_path_directory_item(struct fat_private *fat_private, struct path_part *
                     break;
                 }
 
-                if (strncmp((char *)item->filename, looking_for_a_file, 11) == 0)
+                if (strncmp((char *)item->filename, file_we_are_looking_for, 11) == 0)
                 {
                     file_found = 1;
 
@@ -286,14 +299,19 @@ void get_path_directory_item(struct fat_private *fat_private, struct path_part *
 
                     if (!path)
                     {
+                        // This was the last item in file path
                         memcpy(target_item, item, sizeof(struct fat_directory_item));
                         return;
                     }
 
                     if (path && (!(is_directory_item_directory(item))))
                     {
+                        // We have something in file path but current item is not a folder
+                        // Return an error state
                         return;
                     }
+
+                    // Overwise restart the loop with new path
 
                     break;
                 }
