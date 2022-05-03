@@ -72,6 +72,7 @@ void kernel_main()
 
         print("testing\n");
     }
+    print("Going idle");
 
     while (1)
     {
