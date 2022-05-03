@@ -180,6 +180,21 @@ uint32_t get_cluster_value(struct fat_private *fat_private, uint32_t cluster_id)
     return value;
 }
 
+/**
+ Return 0 if this cluster is last
+ */
+uint8_t get_next_cluster_id(struct fat_private *fat_private, uint32_t cluster_id)
+{
+    uint32_t value = get_cluster_value(fat_private, cluster_id);
+    if (value == 0x0FFFFFF8)
+    {
+        // Last cluster in the chain
+        return 0;
+    }
+    value = value & 0x0FFFFFFF;
+    return value;
+}
+
 void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
 {
 
@@ -219,7 +234,7 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
 
             print("Name: ");
             print((const char *)item->filename);
-            print("\n");
+            print(" ");
             // terminal_writedword(current_cluster_data_address, 3);
 
             item_offset += sizeof(struct fat_directory_item);
@@ -231,8 +246,14 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
             break;
         }
 
-        break;
-        // TODO: Read next cluster
+        current_cluster_id = get_next_cluster_id(fat_private, current_cluster_id);
+        if (!current_cluster_id)
+        {
+            // This was last cluster
+            // Why it happened? It means folder structure is incomplete
+            print("WARNING11111");
+            break;
+        }
     }
     // Let's find this file in this folder
     // Read first cluster
