@@ -62,7 +62,7 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode);
 struct filesystem fat32_fs =
     {
         .resolve = fat32_resolve,
-        .open = NULL,
+        .open = fat32_open,
         .read = NULL,
         .seek = NULL,
         .stat = NULL,
@@ -138,7 +138,7 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
     }
 
     print("Opening file:\n");
-    print(path->part);
+    // print(path->part);
 
     return ERROR(-EUNIMP);
 }

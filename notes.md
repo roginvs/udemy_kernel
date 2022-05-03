@@ -53,6 +53,11 @@ print ptr # print variable name
 
 info register eax # print register
 
+stepi
+
+finish # To exit from current function
+next # Step without going into function
+
 # Debug run
 
 ## This is what happens on startup

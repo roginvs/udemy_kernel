@@ -62,6 +62,8 @@ void kernel_main()
     print("Kernel loaded");
 
     int fd = fopen("0:/folderA/folderB/art1.txt", "r");
+    // int fd = fopen("0:/hello.txt", "r");
+
     if (fd)
     {
         // struct file_stat s;
@@ -70,6 +72,7 @@ void kernel_main()
 
         print("testing\n");
     }
+
     while (1)
     {
     }
