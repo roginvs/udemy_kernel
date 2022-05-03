@@ -59,13 +59,14 @@ struct fat_h
 int fat32_resolve(struct disk *disk);
 void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode);
 int fat32_read(struct disk *disk, void *descriptor, uint32_t size, uint32_t nmemb, char *out_ptr);
+int fat32_seek(void *private, uint32_t offset, FILE_SEEK_MODE seek_mode);
 
 struct filesystem fat32_fs =
     {
         .resolve = fat32_resolve,
         .open = fat32_open,
         .read = fat32_read,
-        .seek = NULL,
+        .seek = fat32_seek,
         .stat = NULL,
         .close = NULL};
 
@@ -150,6 +151,7 @@ struct fat_private_file_handle
     uint32_t file_pos;
     uint32_t current_cluster;
     uint32_t position_in_cluster;
+    struct fat_private *fat_private;
 };
 
 uint32_t get_cluster_data_disk_pos(struct fat_private *fat_private, uint32_t cluster_id)
@@ -350,6 +352,7 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
     file_handle->current_cluster = file_handle->starting_cluster;
     file_handle->file_pos = 0;
     file_handle->position_in_cluster = 0;
+    file_handle->fat_private = fat_private;
 
     return file_handle;
 }
@@ -426,4 +429,53 @@ int fat32_read(struct disk *disk, void *descriptor, uint32_t size, uint32_t nmem
         }
     }
     return how_many_items_we_readed;
+}
+
+int fat32_seek(void *private, uint32_t offset, FILE_SEEK_MODE seek_mode)
+{
+
+    struct fat_private_file_handle *file_handle = private;
+
+    switch (seek_mode)
+    {
+    case SEEK_SET:
+        if (file_handle->file_size > offset)
+        {
+            return (-EINVARG);
+        }
+        file_handle->current_cluster = file_handle->starting_cluster;
+        file_handle->position_in_cluster = 0;
+        file_handle->file_pos = 0;
+        return fat32_seek(file_handle, offset, SEEK_CUR);
+
+    case SEEK_END:
+        return -EUNIMP;
+
+    case SEEK_CUR:
+        if (file_handle->file_size > file_handle->file_pos + offset)
+        {
+            return -EINVARG;
+        };
+        // We know that file will not end
+        while (offset > 0)
+        {
+            // Kind of copy-paste from read
+            uint32_t bytes_available_in_the_cluster = file_handle->fat_private->cluster_size_bytes -
+                                                      file_handle->position_in_cluster;
+            uint32_t seek = min(offset, bytes_available_in_the_cluster);
+            file_handle->position_in_cluster += seek;
+            offset -= seek;
+
+            if (file_handle->position_in_cluster == file_handle->fat_private->cluster_size_bytes)
+            {
+                file_handle->position_in_cluster = 0;
+                uint32_t next_cluster_id = get_next_cluster_id(file_handle->fat_private, file_handle->current_cluster);
+                file_handle->current_cluster = next_cluster_id;
+            }
+        }
+        return 0;
+
+    default:
+        return -EINVARG;
+    }
 }
