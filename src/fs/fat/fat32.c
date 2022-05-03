@@ -25,12 +25,20 @@ struct fat_header
 
 struct fat_header_extended_32
 {
-    uint8_t drive_number;
-    uint8_t win_nt_bit;
-    uint8_t signature;
-    uint32_t volume_id;
-    uint8_t volume_id_string[11];
-    uint8_t system_id_string[8];
+    uint32_t BPB_FATSz32;
+    uint16_t BPB_ExtFlags;
+    uint16_t BPB_FSVer;
+    uint32_t BPB_RootClus;
+    uint16_t BPB_FSInfo;
+    uint16_t BPB_BkBootSec;
+    uint8_t BPB_Reserved[12];
+    uint8_t BS_DrvNum;
+    uint8_t BS_Reserved1;
+    /** Should be 0x29 */
+    uint8_t BS_BootSig;
+    uint32_t BS_VolID;
+    uint8_t BS_VolLab[11];
+    uint8_t BS_FilSysType[8];
 } __attribute__((packed));
 
 struct fat_h
