@@ -4,6 +4,10 @@
 #include <stddef.h>
 // #include "memory/memory.h"
 #include "string/string.h"
+#include "disk/disk.h"
+#include "status.h"
+#include "disk/streamer.h"
+#include "memory/heap/kheap.h"
 
 struct fat_header
 {
@@ -50,9 +54,11 @@ struct fat_h
     } shared;
 };
 
+int fat32_resolve(struct disk *disk);
+
 struct filesystem fat32_fs =
     {
-        .resolve = NULL,
+        .resolve = fat32_resolve,
         .open = NULL,
         .read = NULL,
         .seek = NULL,
@@ -63,4 +69,58 @@ struct filesystem *fat32_init()
 {
     strcpy(fat32_fs.name, "FAT32");
     return &fat32_fs;
+}
+
+struct fat_private
+{
+    struct fat_h header;
+};
+
+int fat32_resolve(struct disk *disk)
+{
+    int res = 0;
+    struct fat_private *fat_private = kzalloc(sizeof(struct fat_private));
+
+    disk->fs_private = fat_private;
+    disk->filesystem = &fat32_fs;
+
+    struct disk_stream *stream = diskstreamer_new(disk->id);
+    if (!stream)
+    {
+        res = -ENOMEM;
+        goto out;
+    }
+
+    if (diskstreamer_read(stream, &fat_private->header, sizeof(fat_private->header)) != PEACHOS_ALL_OK)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    if (fat_private->header.shared.fat_header_extended_32.BS_BootSig != 0x29)
+    {
+        res = -EFSNOTUS;
+        goto out;
+    }
+
+    /*
+        if (fat16_get_root_directory(disk, fat_private, &fat_private->root_directory) != PEACHOS_ALL_OK)
+        {
+            res = -EIO;
+            goto out;
+        }
+        */
+
+out:
+    if (stream)
+    {
+        diskstreamer_close(stream);
+    }
+
+    if (res < 0)
+    {
+        kfree(fat_private);
+        disk->fs_private = 0;
+    }
+    return res;
 }
