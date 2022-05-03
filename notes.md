@@ -55,6 +55,7 @@ info register eax # print register
 
 stepi
 
+layout prev # show code
 finish # To exit from current function
 next # Step without going into function
 
