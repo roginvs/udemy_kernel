@@ -9,6 +9,7 @@
 #include "string/string.h"
 #include "fs/file.h"
 #include "./terminal.h"
+#include "memory/memory.h"
 
 void echo_keyboard()
 {
@@ -66,10 +67,17 @@ void kernel_main()
 
     if (fd)
     {
-        char buf[10000];
-        fread(buf, 68 * 10, 1, fd);
-        fread(buf, 68 * 10, 1, fd);
-        // fread(buf, 1000, 1, fd);
+        char buf[100000];
+        fread(buf, 68 * 15, 1, fd);
+        terminal_initialize();
+        memset(buf, 'A', 1000);
+        // fread(buf, 68 * 100, 1, fd);
+        fread(buf, 32, 1, fd);
+        //  fread(buf, 1000, 1, fd);
+        print("\n");
+        print("strlen=");
+        terminal_writedword(strlen(buf), 2);
+        print("\n");
         print(buf);
 
         // struct file_stat s;

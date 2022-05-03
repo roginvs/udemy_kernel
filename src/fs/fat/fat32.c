@@ -365,11 +365,15 @@ uint32_t min(uint32_t n1, uint32_t n2)
 int fat32_read_internal(struct fat_private *fat_private, struct fat_private_file_handle *file_handle, uint32_t size, char **out_ptr)
 {
 
-    print("[start read] ");
+    print("\n[start read] ");
     uint32_t bytes_left_to_read = size;
 
     while (1)
     {
+        print("\nReading from cluster = ");
+        terminal_writedword(file_handle->current_cluster, 2);
+        print("   ");
+
         //  [------+++++++]  we are in the middle of cluster
         //                   file might end before cluster ends
         //                   and also we want to read "size" bytes
@@ -379,23 +383,39 @@ int fat32_read_internal(struct fat_private *fat_private, struct fat_private_file
         uint32_t how_many_to_read_from_this_cluster =
             min(min(bytes_available_in_the_cluster, bytes_in_the_file_till_the_end), bytes_left_to_read);
 
-        // print("cluster=");
-        // terminal_writedword(bytes_available_in_the_cluster, 3);
-        // print(" filetillend=");
-        // terminal_writedword(bytes_in_the_file_till_the_end, 3);
-        // print(" lefttoread=");
-        // terminal_writedword(bytes_left_to_read, 3);
-        // print(" willread=");
-        // terminal_writedword(how_many_to_read_from_this_cluster, 3);
-        // print(" ");
+        print("clusteravailable=");
+        terminal_writedword(bytes_available_in_the_cluster, 3);
+        print(" filetillend=");
+        terminal_writedword(bytes_in_the_file_till_the_end, 3);
+        print(" lefttoread=");
+        terminal_writedword(bytes_left_to_read, 3);
+        print(" willread=");
+        terminal_writedword(how_many_to_read_from_this_cluster, 3);
+        print(" ");
+
+        print(" position_in_cluster=");
+        terminal_writedword(file_handle->position_in_cluster, 4);
+        print(" ");
 
         uint32_t cluster_disk_pos = get_cluster_data_disk_pos(fat_private, file_handle->current_cluster);
+
+        print(" cluster_disk_pos=");
+        terminal_writedword(cluster_disk_pos, 4);
+        print(" ");
+
         diskstreamer_seek(fat_private->read_stream, cluster_disk_pos + file_handle->position_in_cluster);
         diskstreamer_read(fat_private->read_stream, *out_ptr, how_many_to_read_from_this_cluster);
         *out_ptr += how_many_to_read_from_this_cluster;
         bytes_left_to_read -= how_many_to_read_from_this_cluster;
         file_handle->file_pos += how_many_to_read_from_this_cluster;
         file_handle->position_in_cluster += how_many_to_read_from_this_cluster;
+
+        if (file_handle->position_in_cluster == fat_private->cluster_size_bytes)
+        {
+            file_handle->position_in_cluster = 0;
+            uint32_t next_cluster_id = get_next_cluster_id(fat_private, file_handle->current_cluster);
+            file_handle->current_cluster = next_cluster_id;
+        }
 
         if (!bytes_left_to_read)
         {
@@ -407,28 +427,10 @@ int fat32_read_internal(struct fat_private *fat_private, struct fat_private_file
             return 0;
         }
 
-        uint32_t next_cluster_id = get_next_cluster_id(fat_private, file_handle->current_cluster);
-        if (!next_cluster_id)
+        if (!file_handle->current_cluster)
         {
             print("ERR: File end is not reached but no more clusters and we still want something to read\n");
             return 0;
-        }
-        file_handle->current_cluster = next_cluster_id;
-
-        if (file_handle->position_in_cluster >= fat_private->cluster_size_bytes)
-        {
-            file_handle->position_in_cluster = 0;
-        }
-        else
-        {
-            // There are 2 reasons why we could not reach cluster end:
-            // 1. File is ended. We already returned above if so
-            // 2. Requested amount of bytes is before cluster ending
-            //    So, if something is still requested then why we are here?
-            if (!bytes_left_to_read)
-            {
-                print("ERR: Internal error: why we stopped reading?\n");
-            }
         }
     }
 }
