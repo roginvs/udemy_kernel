@@ -155,6 +155,7 @@ struct fat_directory_item
 
 struct fat_private_file_handle
 {
+    uint32_t starting_cluster;
 };
 
 uint32_t get_cluster_data_address(struct fat_private *fat_private, uint32_t cluster_id)
@@ -207,11 +208,11 @@ void transform_filename_to_fat(char *dest, const char *src)
     uint8_t is_dot_seen = 0;
     while (dest_pos < 11)
     {
-        if (src[dest_pos] == 0x0)
+        if (src[src_pos] == 0x0)
         {
             return;
         }
-        else if (src[dest_pos] == '.')
+        else if (src[src_pos] == '.')
         {
             if (is_dot_seen)
             {
@@ -242,12 +243,6 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
         return ERROR(-ERDONLY);
     }
 
-    struct fat_private_file_handle *file_handle = kzalloc(sizeof(struct fat_private_file_handle));
-    if (!file_handle)
-    {
-        return ERROR(-ENOMEM);
-    }
-
     // print("Opening file:\n");
 
     struct fat_private *fat_private = disk->fs_private;
@@ -255,68 +250,94 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
     uint32_t current_cluster_id = fat_private->header.shared.fat_header_extended_32.BPB_RootClus;
     // uint8_t is_current_cluster_folder = 1;
 
-    char looking_for_a_file[11];
-    transform_filename_to_fat(looking_for_a_file, path->part);
-
-    while (1)
+    while (path)
     {
-        uint32_t current_cluster_data_address = get_cluster_data_address(fat_private, current_cluster_id);
-        diskstreamer_seek(fat_private->read_stream, current_cluster_data_address);
-        diskstreamer_read(fat_private->read_stream, fat_private->buf, fat_private->cluster_size_bytes);
-        uint32_t item_offset = 0;
-        while (item_offset < fat_private->cluster_size_bytes)
+        char looking_for_a_file[11];
+        transform_filename_to_fat(looking_for_a_file, path->part);
+        print("Looking for a record ");
+        print(path->part);
+        print("\n");
+        print(looking_for_a_file);
+        print("\n");
+        uint8_t file_found = 0;
+        while (1)
         {
-            struct fat_directory_item *item = (void *)(fat_private->buf + item_offset);
 
-            if (item->filename[0] == 0x0)
+            uint32_t current_cluster_data_address = get_cluster_data_address(fat_private, current_cluster_id);
+            diskstreamer_seek(fat_private->read_stream, current_cluster_data_address);
+            diskstreamer_read(fat_private->read_stream, fat_private->buf, fat_private->cluster_size_bytes);
+            uint32_t item_offset = 0;
+            while (item_offset < fat_private->cluster_size_bytes)
             {
-                // No more items in this directory
+                struct fat_directory_item *item = (void *)(fat_private->buf + item_offset);
+
+                if (item->filename[0] == 0x0)
+                {
+                    // No more items in this directory
+                    break;
+                }
+
+                if (strncmp((char *)item->filename, looking_for_a_file, 11) == 0)
+                {
+                    file_found = 1;
+                    print("FILE FOUND = ");
+                    print((char *)item->filename);
+                    print("\n");
+
+                    path = path->next;
+                    current_cluster_id = (item->high_16_bits_first_cluster << 16) +
+                                         item->low_16_bits_first_cluster;
+                    break;
+                }
+                // if (item->filename[0] != 'Q')
+                //{
+                //
+                //     print("Name: ");
+                //     print((const char *)item->filename);
+                //     print(" ");
+                // }
+
+                // terminal_writedword(current_cluster_data_address, 3);
+
+                item_offset += sizeof(struct fat_directory_item);
+            }
+
+            if (item_offset < fat_private->cluster_size_bytes)
+            {
+                // Previous loop exitted earlied, no more files
                 break;
             }
 
-            if (strncmp((char *)item->filename, looking_for_a_file, 11) == 0)
+            current_cluster_id = get_next_cluster_id(fat_private, current_cluster_id);
+            if (!current_cluster_id)
             {
-                print("FILE FOUND = ");
-                print((char *)item->filename);
-                print("\n");
+                // This was last cluster
+                // Why it happened? It means folder structure is incomplete
+                print("WARNING11111");
+                break;
             }
-            // if (item->filename[0] != 'Q')
-            //{
-            //
-            //     print("Name: ");
-            //     print((const char *)item->filename);
-            //     print(" ");
-            // }
 
-            // terminal_writedword(current_cluster_data_address, 3);
-
-            item_offset += sizeof(struct fat_directory_item);
+            // print("MOVED TO NEXT CLUSTER\n");
         }
-
-        if (item_offset < fat_private->cluster_size_bytes)
+        if (!file_found)
         {
-            // Previous loop exitted earlied, no more files
-            break;
+            print("FILE IS NOT FOUND IN THIS FOLDER\n");
+            return ERROR(-EIO);
         }
-
-        current_cluster_id = get_next_cluster_id(fat_private, current_cluster_id);
-        if (!current_cluster_id)
-        {
-            // This was last cluster
-            // Why it happened? It means folder structure is incomplete
-            print("WARNING11111");
-            break;
-        }
-
-        // print("MOVED TO NEXT CLUSTER\n");
     }
-    // Let's find this file in this folder
-    // Read first cluster
-    // disk->
 
-    // print(path->part);
+    if (!current_cluster_id)
+    {
 
-out:
+        return ERROR(-EIO);
+    }
 
-    return ERROR(-EUNIMP);
+    struct fat_private_file_handle *file_handle = kzalloc(sizeof(struct fat_private_file_handle));
+    if (!file_handle)
+    {
+        return ERROR(-ENOMEM);
+    }
+
+    file_handle->starting_cluster = current_cluster_id;
+    return file_handle;
 }

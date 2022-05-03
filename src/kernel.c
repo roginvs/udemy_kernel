@@ -59,7 +59,7 @@ void kernel_main()
 
     enable_interrupts();
 
-    print("Kernel loaded");
+    print("Kernel loaded\n");
 
     int fd = fopen("0:/folderA/folderB/art1.txt", "r");
     // int fd = fopen("0:/hello.txt", "r");
