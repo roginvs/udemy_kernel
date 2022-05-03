@@ -8,6 +8,7 @@
 #include "status.h"
 #include "disk/streamer.h"
 #include "memory/heap/kheap.h"
+#include "kernel.h"
 
 struct fat_header
 {

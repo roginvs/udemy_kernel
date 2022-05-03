@@ -5,7 +5,9 @@
     "*.tcc": "c",
     "algorithm": "c",
     "fstream": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "kernel.h": "c",
+    "terminal.h": "c"
   },
   "editor.formatOnSave": true
 }
