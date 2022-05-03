@@ -70,7 +70,6 @@ struct filesystem fat32_fs =
 
 struct filesystem *fat32_init()
 {
-    print("Initialized FAT32\n");
     strcpy(fat32_fs.name, "FAT32");
     return &fat32_fs;
 }
@@ -115,17 +114,7 @@ int fat32_resolve(struct disk *disk)
     fat_private->cluster_size_bytes = fat_private->header.primary_header.bytes_per_sector *
                                       fat_private->header.primary_header.sectors_per_cluster;
     fat_private->buf = kzalloc(fat_private->cluster_size_bytes);
-    /*
-        if (fat16_get_root_directory(disk, fat_private, &fat_private->root_directory) != PEACHOS_ALL_OK)
-        {
-            res = -EIO;
-            goto out;
-        }
-        */
-    print("Wow, FAT32 resolved:\n");
-    print("  Cluster size = ");
-    terminal_writedword(fat_private->cluster_size_bytes, 3);
-    print("\n");
+
 out:
 
     if (res < 0)
@@ -262,11 +251,6 @@ void get_path_directory_item(struct fat_private *fat_private, struct path_part *
     {
         char looking_for_a_file[11];
         transform_filename_to_fat(looking_for_a_file, path->part);
-        //  print("Looking for a record ");
-        //  print(path->part);
-        //  print("\n");
-        //  print(looking_for_a_file);
-        //  print("\n");
         uint8_t file_found = 0;
         while (1)
         {
@@ -288,9 +272,6 @@ void get_path_directory_item(struct fat_private *fat_private, struct path_part *
                 if (strncmp((char *)item->filename, looking_for_a_file, 11) == 0)
                 {
                     file_found = 1;
-                    print("FILE FOUND = ");
-                    print((char *)item->filename);
-                    print("\n");
 
                     path = path->next;
                     current_cluster_id = get_directory_item_target_cluster_id(item);
@@ -303,21 +284,11 @@ void get_path_directory_item(struct fat_private *fat_private, struct path_part *
 
                     if (path && (!(is_directory_item_directory(item))))
                     {
-                        print("ERR: This is a file, not a dir\n");
                         return;
                     }
 
                     break;
                 }
-                // if (item->filename[0] != 'Q')
-                //{
-                //
-                //     print("Name: ");
-                //     print((const char *)item->filename);
-                //     print(" ");
-                // }
-
-                // terminal_writedword(current_cluster_data_address, 3);
 
                 item_offset += sizeof(struct fat_directory_item);
             }
@@ -333,15 +304,13 @@ void get_path_directory_item(struct fat_private *fat_private, struct path_part *
             {
                 // This was last cluster
                 // Why it happened? It means folder structure is incomplete
-                print("WARNING11111");
+                print("Warn: reached last cluster but not the end of directory\n");
                 break;
             }
-
-            // print("MOVED TO NEXT CLUSTER\n");
         }
         if (!file_found)
         {
-            print("FILE IS NOT FOUND IN THIS FOLDER\n");
+            print("Err: File is not found in this folder\n");
             return;
         }
     }
@@ -354,8 +323,6 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
     {
         return ERROR(-ERDONLY);
     }
-
-    // print("Opening file:\n");
 
     struct fat_private *fat_private = disk->fs_private;
 
