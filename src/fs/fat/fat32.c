@@ -9,6 +9,7 @@
 #include "disk/streamer.h"
 #include "memory/heap/kheap.h"
 #include "terminal.h"
+#include "kernel.h"
 
 struct fat_header
 {
@@ -56,6 +57,7 @@ struct fat_h
 };
 
 int fat32_resolve(struct disk *disk);
+void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode);
 
 struct filesystem fat32_fs =
     {
@@ -125,4 +127,15 @@ out:
         disk->fs_private = 0;
     }
     return res;
+}
+
+void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
+{
+
+    if (mode != FILE_MODE_READ)
+    {
+        return ERROR(-ERDONLY);
+    }
+
+    return ERROR(-EUNIMP);
 }
