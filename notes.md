@@ -192,3 +192,11 @@ mkfs.vfat -F 32 -f 2 -R 512 -s 4 -h 0 /tmp/myfat
 # This works?
 mkfs.vfat -F 32 -f 2 -R 496 -s 4 -h 0 /tmp/myfat
 ```
+
+==
+Fat notes:
+
+512(reserved) * 512 = start of the fat
+Fat is 4 bytes each, upper 4 bits are not used. Each value points to index of next cluster or
+hold special values (end-of-chain or bad cluster);
+For cluster N data is = (N-2)*cluster_size + reserved_sectors*bytes_per_sector + fat_size_sectors * bytes_per_sector \* fat_count;

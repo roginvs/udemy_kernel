@@ -1,6 +1,6 @@
 # By default make runs first label it sees
 
-FILES = ./build/kernel.asm.o ./build/kernel.o ./build/disk/disk.o ./build/disk/streamer.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o ./build/string/string.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/memory/memory.o ./build/io/io.asm.o ./build/memory/heap/heap.o ./build/memory/heap/kheap.o  ./build/memory/paging/paging.o ./build/memory/paging/paging.asm.o
+FILES = ./build/kernel.asm.o ./build/kernel.o ./build/disk/disk.o ./build/disk/streamer.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o ./build/fs/fat/fat32.o ./build/string/string.o ./build/idt/idt.asm.o ./build/idt/idt.o ./build/memory/memory.o ./build/io/io.asm.o ./build/memory/heap/heap.o ./build/memory/heap/kheap.o  ./build/memory/paging/paging.o ./build/memory/paging/paging.asm.o
 INCLUDES = -I./src
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -18,7 +18,8 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	# Copy a file over
 	df /mnt/d
 	df --block-size=512 --total --all /mnt/d
-	sudo cp ./hello.txt /mnt/d
+	# sudo cp ./hello.txt /mnt/d
+	sudo dd if=/dev/urandom bs=2048 count=2 of=/mnt/d/random1
 	sudo umount /mnt/d
 
 ./bin/kernel.bin: $(FILES)
@@ -80,6 +81,10 @@ all: ./bin/boot.bin ./bin/kernel.bin
 ./build/fs/fat/fat16.o: ./src/fs/fat/fat16.c
 	mkdir -p ./build/fs/fat
 	i686-elf-gcc $(INCLUDES) -I./src/fs -I./src/fat $(FLAGS) -std=gnu99 -c ./src/fs/fat/fat16.c -o ./build/fs/fat/fat16.o
+
+./build/fs/fat/fat32.o: ./src/fs/fat/fat32.c
+	mkdir -p ./build/fs/fat
+	i686-elf-gcc $(INCLUDES) -I./src/fs -I./src/fat $(FLAGS) -std=gnu99 -c ./src/fs/fat/fat32.c -o ./build/fs/fat/fat32.o
 
 ./build/fs/pparser.o: ./src/fs/pparser.c
 	mkdir -p ./build/fs
