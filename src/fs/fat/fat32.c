@@ -58,12 +58,13 @@ struct fat_h
 
 int fat32_resolve(struct disk *disk);
 void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode);
+int fat32_read(struct disk *disk, void *descriptor, uint32_t size, uint32_t nmemb, char *out_ptr);
 
 struct filesystem fat32_fs =
     {
         .resolve = fat32_resolve,
         .open = fat32_open,
-        .read = NULL,
+        .read = fat32_read,
         .seek = NULL,
         .stat = NULL,
         .close = NULL};
@@ -146,6 +147,9 @@ struct fat_private_file_handle
 {
     uint32_t starting_cluster;
     uint32_t file_size;
+    uint32_t file_pos;
+    uint32_t current_cluster;
+    uint32_t position_in_cluster;
 };
 
 uint32_t get_cluster_data_disk_pos(struct fat_private *fat_private, uint32_t cluster_id)
@@ -343,16 +347,95 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
 
     file_handle->starting_cluster = get_directory_item_target_cluster_id(&item);
     file_handle->file_size = item.filesize;
-
-    if (1)
-    {
-        // print file content of first clusteer
-        uint32_t cluster_id = get_directory_item_target_cluster_id(&item);
-        uint32_t disk_pos = get_cluster_data_disk_pos(fat_private, cluster_id);
-        diskstreamer_seek(fat_private->read_stream, disk_pos);
-        diskstreamer_read(fat_private->read_stream, fat_private->buf, fat_private->cluster_size_bytes);
-        print((char *)fat_private->buf);
-    }
+    file_handle->current_cluster = file_handle->starting_cluster;
+    file_handle->file_pos = 0;
+    file_handle->position_in_cluster = 0;
 
     return file_handle;
+}
+
+uint32_t min(uint32_t n1, uint32_t n2)
+{
+    return n1 < n2 ? n1 : n2;
+}
+
+/**
+ * Return 1 if all size was readed, overwise zero
+ */
+int fat32_read_internal(struct fat_private *fat_private, struct fat_private_file_handle *file_handle, uint32_t size, char **out_ptr)
+{
+
+    uint32_t bytes_left_to_read = size;
+
+    while (1)
+    {
+        //  [------+++++++]  we are in the middle of cluster
+        //                   file might end before cluster ends
+        //                   and also we want to read "size" bytes
+        uint32_t bytes_available_in_the_cluster = fat_private->cluster_size_bytes -
+                                                  file_handle->position_in_cluster;
+        uint32_t bytes_in_the_file_till_the_end = file_handle->file_size - file_handle->file_pos;
+        uint32_t how_many_to_read_from_this_cluster =
+            min(min(bytes_available_in_the_cluster, bytes_in_the_file_till_the_end), bytes_left_to_read);
+
+        uint32_t cluster_disk_pos = get_cluster_data_disk_pos(fat_private, file_handle->current_cluster);
+        diskstreamer_seek(fat_private->read_stream, cluster_disk_pos + file_handle->position_in_cluster);
+        diskstreamer_read(fat_private->read_stream, *out_ptr, how_many_to_read_from_this_cluster);
+        *out_ptr += how_many_to_read_from_this_cluster;
+        bytes_left_to_read -= how_many_to_read_from_this_cluster;
+        file_handle->file_pos += how_many_to_read_from_this_cluster;
+        file_handle->position_in_cluster += how_many_to_read_from_this_cluster;
+
+        if (!bytes_left_to_read)
+        {
+
+            return 1;
+        }
+        if (file_handle->file_pos == file_handle->file_size)
+        {
+            return 0;
+        }
+
+        uint32_t next_cluster_id = get_next_cluster_id(fat_private, file_handle->current_cluster);
+        if (!next_cluster_id)
+        {
+            print("ERR: File end is not reached but no more clusters and we still want something to read\n");
+            return 0;
+        }
+        file_handle->current_cluster = next_cluster_id;
+
+        if (file_handle->position_in_cluster >= fat_private->cluster_size_bytes)
+        {
+            file_handle->position_in_cluster = 0;
+        }
+        else
+        {
+            // There are 2 reasons why we could not reach cluster end:
+            // 1. File is ended. We already returned above if so
+            // 2. Requested amount of bytes is before cluster ending
+            //    So, if something is still requested then why we are here?
+            if (!bytes_left_to_read)
+            {
+                print("ERR: Internal error: why we stopped reading?\n");
+            }
+        }
+    }
+}
+
+int fat32_read(struct disk *disk, void *descriptor, uint32_t size, uint32_t nmemb, char *out_ptr)
+{
+    struct fat_private *fat_private = disk->fs_private;
+    struct fat_private_file_handle *file_handle = descriptor;
+
+    int how_many_items_we_readed = 0;
+    for (uint32_t i = 0; i < nmemb; i++)
+    {
+        int this_block_status = fat32_read_internal(fat_private, file_handle, size, &out_ptr);
+        how_many_items_we_readed += this_block_status;
+        if (this_block_status == 0)
+        {
+            break;
+        }
+    }
+    return how_many_items_we_readed;
 }

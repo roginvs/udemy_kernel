@@ -22,6 +22,7 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	sudo cp ./hello.txt /mnt/d
 	sudo mkdir -p /mnt/d/folderA/folderB
 	sudo cp ./art1.txt /mnt/d/folderA/folderB
+	sudo cp ./art2.txt /mnt/d/folderA/folderB
 	ls -la /mnt/d
 	sudo umount /mnt/d
 
