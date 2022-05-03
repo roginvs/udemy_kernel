@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-// #include "memory/memory.h"
+#include "memory/memory.h"
 #include "string/string.h"
 #include "disk/disk.h"
 #include "status.h"
@@ -159,7 +159,7 @@ struct fat_private_file_handle
     uint32_t file_size;
 };
 
-uint32_t get_cluster_data_address(struct fat_private *fat_private, uint32_t cluster_id)
+uint32_t get_cluster_data_disk_pos(struct fat_private *fat_private, uint32_t cluster_id)
 {
     return fat_private->header.primary_header.bytes_per_sector *
                fat_private->header.primary_header.reserved_sectors +
@@ -236,37 +236,43 @@ void transform_filename_to_fat(char *dest, const char *src)
     }
 }
 
-void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
+uint32_t get_directory_item_target_cluster_id(struct fat_directory_item *item)
 {
+    return (item->high_16_bits_first_cluster << 16) +
+           item->low_16_bits_first_cluster;
+}
 
-    if (mode != FILE_MODE_READ)
-    {
-        return ERROR(-ERDONLY);
-    }
+uint8_t is_directory_item_directory(struct fat_directory_item *item)
+{
+    return item->attribute & 0x10;
+}
 
-    // print("Opening file:\n");
-
-    struct fat_private *fat_private = disk->fs_private;
+/**
+ * Fills target_item with file item in the folder
+ * If file/dir is not found then fills with zeros
+ */
+void get_path_directory_item(struct fat_private *fat_private, struct path_part *path,
+                             struct fat_directory_item *target_item)
+{
+    memset(target_item, 0, sizeof(struct fat_directory_item));
 
     uint32_t current_cluster_id = fat_private->header.shared.fat_header_extended_32.BPB_RootClus;
-    // uint8_t is_current_cluster_folder = 1;
-    uint32_t file_size;
 
-    while (path)
+    while (1)
     {
         char looking_for_a_file[11];
         transform_filename_to_fat(looking_for_a_file, path->part);
-        print("Looking for a record ");
-        print(path->part);
-        print("\n");
-        print(looking_for_a_file);
-        print("\n");
+        //  print("Looking for a record ");
+        //  print(path->part);
+        //  print("\n");
+        //  print(looking_for_a_file);
+        //  print("\n");
         uint8_t file_found = 0;
         while (1)
         {
 
-            uint32_t current_cluster_data_address = get_cluster_data_address(fat_private, current_cluster_id);
-            diskstreamer_seek(fat_private->read_stream, current_cluster_data_address);
+            uint32_t current_cluster_data_disk_pos = get_cluster_data_disk_pos(fat_private, current_cluster_id);
+            diskstreamer_seek(fat_private->read_stream, current_cluster_data_disk_pos);
             diskstreamer_read(fat_private->read_stream, fat_private->buf, fat_private->cluster_size_bytes);
             uint32_t item_offset = 0;
             while (item_offset < fat_private->cluster_size_bytes)
@@ -287,9 +293,20 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
                     print("\n");
 
                     path = path->next;
-                    current_cluster_id = (item->high_16_bits_first_cluster << 16) +
-                                         item->low_16_bits_first_cluster;
-                    file_size = item->filesize;
+                    current_cluster_id = get_directory_item_target_cluster_id(item);
+
+                    if (!path)
+                    {
+                        memcpy(target_item, item, sizeof(struct fat_directory_item));
+                        return;
+                    }
+
+                    if (path && (!(is_directory_item_directory(item))))
+                    {
+                        print("ERR: This is a file, not a dir\n");
+                        return;
+                    }
+
                     break;
                 }
                 // if (item->filename[0] != 'Q')
@@ -325,11 +342,27 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
         if (!file_found)
         {
             print("FILE IS NOT FOUND IN THIS FOLDER\n");
-            return ERROR(-EIO);
+            return;
         }
     }
+}
 
-    if (!current_cluster_id)
+void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
+{
+
+    if (mode != FILE_MODE_READ)
+    {
+        return ERROR(-ERDONLY);
+    }
+
+    // print("Opening file:\n");
+
+    struct fat_private *fat_private = disk->fs_private;
+
+    struct fat_directory_item item;
+    get_path_directory_item(fat_private, path, &item);
+
+    if (item.filename[0] == 0)
     {
 
         return ERROR(-EIO);
@@ -341,8 +374,18 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
         return ERROR(-ENOMEM);
     }
 
-    file_handle->starting_cluster = current_cluster_id;
-    file_handle->file_size = file_size;
+    file_handle->starting_cluster = get_directory_item_target_cluster_id(&item);
+    file_handle->file_size = item.filesize;
+
+    if (1)
+    {
+        // print file content of first clusteer
+        uint32_t cluster_id = get_directory_item_target_cluster_id(&item);
+        uint32_t disk_pos = get_cluster_data_disk_pos(fat_private, cluster_id);
+        diskstreamer_seek(fat_private->read_stream, disk_pos);
+        diskstreamer_read(fat_private->read_stream, fat_private->buf, fat_private->cluster_size_bytes);
+        print((char *)fat_private->buf);
+    }
 
     return file_handle;
 }
