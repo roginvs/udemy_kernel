@@ -18,9 +18,11 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	# Copy a file over
 	df /mnt/d
 	# df --block-size=512 --total --all /mnt/d
+	# for i in `seq 1 100`; do sudo touch /mnt/d/Q$$i.txt; done # To add multiple files to test
 	sudo cp ./hello.txt /mnt/d
 	sudo mkdir -p /mnt/d/folderA/folderB
 	sudo cp ./art1.txt /mnt/d/folderA/folderB
+	ls -la /mnt/d
 	sudo umount /mnt/d
 
 ./bin/kernel.bin: $(FILES)

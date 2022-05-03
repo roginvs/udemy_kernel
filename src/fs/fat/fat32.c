@@ -195,6 +195,45 @@ uint8_t get_next_cluster_id(struct fat_private *fat_private, uint32_t cluster_id
     return value;
 }
 
+void transform_filename_to_fat(char *dest, const char *src)
+{
+    uint8_t dest_pos = 0;
+    for (dest_pos = 0; dest_pos < 11; dest_pos++)
+    {
+        dest[dest_pos] = 0x20;
+    };
+    dest_pos = 0;
+    uint8_t src_pos = 0;
+    uint8_t is_dot_seen = 0;
+    while (dest_pos < 11)
+    {
+        if (src[dest_pos] == 0x0)
+        {
+            return;
+        }
+        else if (src[dest_pos] == '.')
+        {
+            if (is_dot_seen)
+            {
+                // Just ignore this
+                src_pos++;
+            }
+            else
+            {
+                is_dot_seen = 1;
+                src_pos++;
+                dest_pos = 8;
+            }
+        }
+        else
+        {
+            dest[dest_pos] = toupper(src[src_pos]);
+            src_pos++;
+            dest_pos++;
+        }
+    }
+}
+
 void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
 {
 
@@ -216,6 +255,9 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
     uint32_t current_cluster_id = fat_private->header.shared.fat_header_extended_32.BPB_RootClus;
     // uint8_t is_current_cluster_folder = 1;
 
+    char looking_for_a_file[11];
+    transform_filename_to_fat(looking_for_a_file, path->part);
+
     while (1)
     {
         uint32_t current_cluster_data_address = get_cluster_data_address(fat_private, current_cluster_id);
@@ -232,9 +274,20 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
                 break;
             }
 
-            print("Name: ");
-            print((const char *)item->filename);
-            print(" ");
+            if (strncmp((char *)item->filename, looking_for_a_file, 11) == 0)
+            {
+                print("FILE FOUND = ");
+                print((char *)item->filename);
+                print("\n");
+            }
+            // if (item->filename[0] != 'Q')
+            //{
+            //
+            //     print("Name: ");
+            //     print((const char *)item->filename);
+            //     print(" ");
+            // }
+
             // terminal_writedword(current_cluster_data_address, 3);
 
             item_offset += sizeof(struct fat_directory_item);
@@ -254,6 +307,8 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
             print("WARNING11111");
             break;
         }
+
+        // print("MOVED TO NEXT CLUSTER\n");
     }
     // Let's find this file in this folder
     // Read first cluster
