@@ -8,7 +8,7 @@
 #include "status.h"
 #include "disk/streamer.h"
 #include "memory/heap/kheap.h"
-#include "kernel.h"
+#include "terminal.h"
 
 struct fat_header
 {
@@ -68,6 +68,7 @@ struct filesystem fat32_fs =
 
 struct filesystem *fat32_init()
 {
+    print("Initialized FAT32\n");
     strcpy(fat32_fs.name, "FAT32");
     return &fat32_fs;
 }
@@ -111,7 +112,7 @@ int fat32_resolve(struct disk *disk)
             goto out;
         }
         */
-
+    print("Wow, FAT32 resolved!\n");
 out:
     if (stream)
     {
