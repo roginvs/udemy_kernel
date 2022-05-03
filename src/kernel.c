@@ -61,13 +61,15 @@ void kernel_main()
 
     print("Kernel loaded\n");
 
-    int fd = fopen("0:/folderA/folderB/art2.txt", "r");
+    int fd = fopen("0:/folderA/folderB/art3.txt", "r");
     // int fd = fopen("0:/hello.txt", "r");
 
     if (fd)
     {
         char buf[10000];
-        fread(buf, 1000, 1, fd);
+        fread(buf, 68 * 10, 1, fd);
+        fread(buf, 68 * 10, 1, fd);
+        // fread(buf, 1000, 1, fd);
         print(buf);
 
         // struct file_stat s;

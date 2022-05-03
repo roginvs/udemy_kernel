@@ -365,6 +365,7 @@ uint32_t min(uint32_t n1, uint32_t n2)
 int fat32_read_internal(struct fat_private *fat_private, struct fat_private_file_handle *file_handle, uint32_t size, char **out_ptr)
 {
 
+    print("[start read] ");
     uint32_t bytes_left_to_read = size;
 
     while (1)
@@ -377,6 +378,16 @@ int fat32_read_internal(struct fat_private *fat_private, struct fat_private_file
         uint32_t bytes_in_the_file_till_the_end = file_handle->file_size - file_handle->file_pos;
         uint32_t how_many_to_read_from_this_cluster =
             min(min(bytes_available_in_the_cluster, bytes_in_the_file_till_the_end), bytes_left_to_read);
+
+        // print("cluster=");
+        // terminal_writedword(bytes_available_in_the_cluster, 3);
+        // print(" filetillend=");
+        // terminal_writedword(bytes_in_the_file_till_the_end, 3);
+        // print(" lefttoread=");
+        // terminal_writedword(bytes_left_to_read, 3);
+        // print(" willread=");
+        // terminal_writedword(how_many_to_read_from_this_cluster, 3);
+        // print(" ");
 
         uint32_t cluster_disk_pos = get_cluster_data_disk_pos(fat_private, file_handle->current_cluster);
         diskstreamer_seek(fat_private->read_stream, cluster_disk_pos + file_handle->position_in_cluster);
