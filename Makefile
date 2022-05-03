@@ -17,9 +17,10 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	sudo mount -t vfat ./bin/os.bin /mnt/d
 	# Copy a file over
 	df /mnt/d
-	df --block-size=512 --total --all /mnt/d
-	# sudo cp ./hello.txt /mnt/d
-	sudo dd if=/dev/urandom bs=2048 count=2 of=/mnt/d/random1
+	# df --block-size=512 --total --all /mnt/d
+	sudo cp ./hello.txt /mnt/d
+	sudo mkdir -p /mnt/d/folderA/folderB
+	sudo cp ./art1.txt /mnt/d/folderA/folderB
 	sudo umount /mnt/d
 
 ./bin/kernel.bin: $(FILES)

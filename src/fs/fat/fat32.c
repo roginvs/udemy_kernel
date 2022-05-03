@@ -137,5 +137,8 @@ void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
         return ERROR(-ERDONLY);
     }
 
+    print("Opening file:\n");
+    print(path->part);
+
     return ERROR(-EUNIMP);
 }
