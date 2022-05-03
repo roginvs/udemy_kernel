@@ -60,6 +60,7 @@ int fat32_resolve(struct disk *disk);
 void *fat32_open(struct disk *disk, struct path_part *path, FILE_MODE mode);
 int fat32_read(struct disk *disk, void *descriptor, uint32_t size, uint32_t nmemb, char *out_ptr);
 int fat32_seek(void *private, uint32_t offset, FILE_SEEK_MODE seek_mode);
+int fat32_stat(struct disk *disk, void *private, struct file_stat *stat);
 
 struct filesystem fat32_fs =
     {
@@ -67,7 +68,7 @@ struct filesystem fat32_fs =
         .open = fat32_open,
         .read = fat32_read,
         .seek = fat32_seek,
-        .stat = NULL,
+        .stat = fat32_stat,
         .close = NULL};
 
 struct filesystem *fat32_init()
@@ -474,8 +475,15 @@ int fat32_seek(void *private, uint32_t offset, FILE_SEEK_MODE seek_mode)
             }
         }
         return 0;
-
-    default:
-        return -EINVARG;
     }
+
+    return -EINVARG;
+}
+
+int fat32_stat(struct disk *disk, void *private, struct file_stat *stat)
+{
+    struct fat_private_file_handle *file_handle = private;
+    stat->filesize = file_handle->file_size;
+    stat->flags = FILE_STAT_READ_ONLY;
+    return 0;
 }
