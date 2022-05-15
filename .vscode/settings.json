@@ -9,7 +9,8 @@
     "kernel.h": "c",
     "terminal.h": "c",
     "fat32.h": "c",
-    "string.h": "c"
+    "string.h": "c",
+    "config.h": "c"
   },
   "editor.formatOnSave": true
 }
