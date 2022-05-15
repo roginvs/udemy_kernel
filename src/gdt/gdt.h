@@ -57,7 +57,8 @@ L: Long-mode code flag. If set (1), the descriptor defines a 64-bit code segment
     uint8_t high_flags;
     /** Segment base, bits 24-31 */
     uint8_t base_24_31_bits;
-};
+} __attribute__((packed));
+;
 
 /**
  This is our user-type to simplify gdt
