@@ -2,6 +2,7 @@
 #define GDT_H
 #include <stdint.h>
 
+// https://wiki.osdev.org/Global_Descriptor_Table
 // https://www.geeksforgeeks.org/what-is-global-descriptor-table/
 
 /**
