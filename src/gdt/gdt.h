@@ -59,6 +59,9 @@ L: Long-mode code flag. If set (1), the descriptor defines a 64-bit code segment
     uint8_t base_24_31_bits;
 };
 
+/**
+ This is our user-type to simplify gdt
+ */
 struct gdt_structured
 {
     uint32_t base;
