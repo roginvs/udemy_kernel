@@ -60,6 +60,7 @@ void kernel_main()
     terminal_initialize();
     print("Hello world!\ntest");
 
+    // Transform our defined gdt_structured into gdt_real structure
     memset(gdt_real, 0x00, sizeof(gdt_real));
     gdt_structured_to_gdt(gdt_real, gdt_structured, PEACHOS_TOTAL_GDT_SEGMENTS);
 
