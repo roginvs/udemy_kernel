@@ -45,10 +45,15 @@ void panic(const char *msg)
 
 struct gdt gdt_real[PEACHOS_TOTAL_GDT_SEGMENTS];
 struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
-    {.base = 0x00, .limit = 0x00, .type = 0x00},       // NULL Segment
-    {.base = 0x00, .limit = 0xffffffff, .type = 0x9a}, // Kernel code segment
-    {.base = 0x00, .limit = 0xffffffff, .type = 0x92}  // Kernel data segment
-};
+    {.base = 0x00, .limit = 0x00, .type = 0x00}, // NULL Segment
+    {.base = 0x00, .limit = 0xffffffff,
+     // Kernel code segment
+     // 0x9a = 10011010b
+     .type = 0x9a},
+    {.base = 0x00, .limit = 0xffffffff,
+     // Kernel data segment
+     // 10010010b
+     .type = 0x92}};
 
 void kernel_main()
 {

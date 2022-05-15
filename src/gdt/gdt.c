@@ -8,10 +8,15 @@ void encodeGdtEntry(uint8_t *target, struct gdt_structured source)
         panic("encodeGdtEntry: Invalid argument\n");
     }
 
+    // DB: Size flag.
+    //  If clear (0), the descriptor defines a 16-bit protected mode segment.
+    //  If set (1) it defines a 32-bit protected mode segment. A GDT can have both 16-bit and 32-bit selectors at once.
+    // We set this flag.
     target[6] = 0x40;
     if (source.limit > 65536)
     {
         source.limit = source.limit >> 12;
+        // We set DB flag and Granularity flag
         target[6] = 0xC0;
     }
 
