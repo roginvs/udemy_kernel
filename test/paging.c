@@ -5,11 +5,23 @@
 #include <CUnit/CUError.h>
 #include <stdlib.h>
 
+#include "mocks/paging_load_directory.h"
+
+#include "../src/memory/paging/paging.h"
+#include "../src/memory/paging/paging.c"
+
 int init_paging_suite()
 {
+    return 0;
 }
 int clean_paging_suite()
 {
+    return 0;
+}
+
+int test_zero_allocations()
+{
+    CU_ASSERT(0 == mock_allocs_count);
 }
 void add_paging_suite()
 {
@@ -18,6 +30,8 @@ void add_paging_suite()
     {
         exit(1);
     }
+
+    CU_ADD_TEST(pSuite, test_zero_allocations);
 
     /* NOTE - ORDER IS IMPORTANT - MUST TEST fread() AFTER fprintf() */
     /*

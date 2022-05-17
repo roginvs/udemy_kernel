@@ -10,7 +10,9 @@
     "terminal.h": "c",
     "fat32.h": "c",
     "string.h": "c",
-    "config.h": "c"
+    "config.h": "c",
+    "cunit.h": "c",
+    "paging.h": "c"
   },
   "editor.formatOnSave": true
 }

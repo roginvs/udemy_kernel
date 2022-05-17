@@ -1,7 +1,7 @@
-#include "./paging.c"
 #include <CUnit/CUnit.h>
 #include <CUnit/CUError.h>
 #include "CUnit/Basic.h"
+#include "paging.c"
 
 int main()
 {
