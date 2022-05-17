@@ -57,6 +57,9 @@ out:
 
 struct task *task_get_next()
 {
+    // TODO: What if current_task is NULL ?
+    // At this point it will never happen because it is only called from task_list_remove
+
     if (!current_task->next)
     {
         return task_head;
@@ -71,6 +74,8 @@ static void task_list_remove(struct task *task)
     {
         task->prev->next = task->next;
     }
+
+    // TODO: Update task->next->prev = task->prev ?
 
     if (task == task_head)
     {
@@ -102,11 +107,14 @@ int task_init(struct task *task)
 {
     memset(task, 0, sizeof(struct task));
     // Map the entire 4GB address space to its self
+
     task->page_directory = paging_new_4gb(PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     if (!task->page_directory)
     {
         return -EIO;
     }
+
+    // TODO: How about code segment?
 
     task->registers.ip = PEACHOS_PROGRAM_VIRTUAL_ADDRESS;
     task->registers.ss = USER_DATA_SEGMENT;
