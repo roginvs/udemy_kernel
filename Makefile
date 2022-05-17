@@ -138,3 +138,8 @@ clean:
 	# rm -rf ${FILES}
 	# rm -rf ./build/kernelfull.o
 	rm -rf bin build
+
+.PHONY: test
+test:
+	gcc test/main.c -o test/main.bin
+	./test/main.bin
