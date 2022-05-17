@@ -26,6 +26,7 @@ int test_zero_allocations()
 
 int test_paging_new_4gb()
 {
+    // We test that paging_new_4gb returns plain paging
     uint8_t test_flags_array[] = {0, PAGING_IS_PRESENT, PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL};
     for (int i = 0; i < sizeof(test_flags_array) / sizeof(uint8_t); i++)
     {
