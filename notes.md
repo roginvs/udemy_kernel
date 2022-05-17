@@ -92,6 +92,7 @@ dd if=boot.bin of="/dev/disk/by-id/usb-Kingston_DataTraveler_3.0_60A44C3FACC9B13
 ```sh
 apt-get install build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo libisl-dev
 apt-get install libcloog-isl-dev # Not works?
+apt-get install libcunit1-dev # For unit tests
 
 wget https://www.nic.funet.fi/pub/gnu/ftp.gnu.org/pub/gnu/binutils/binutils-2.35.tar.gz
 tar -xvf binutils-2.35.tar.gz

@@ -141,5 +141,5 @@ clean:
 
 .PHONY: test
 test:
-	gcc test/main.c -o test/main.bin
+	gcc test/main.c -lcunit -o test/main.bin
 	./test/main.bin
