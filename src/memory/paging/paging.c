@@ -61,7 +61,7 @@ static void paging_new_4gb_validate(struct paging_4gb_chunk *chunk_4gb)
         print("\nERROR: Table 1023 entry 1023\n");
         return;
     }
-    print("\npaging_new_4gb is ok\n");
+    // print("\npaging_new_4gb is ok\n");
 }
 
 struct paging_4gb_chunk *paging_new_4gb(uint8_t flags)

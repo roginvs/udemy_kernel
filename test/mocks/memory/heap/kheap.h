@@ -7,7 +7,8 @@ int mock_allocs_count = 0;
 void *kzalloc(size_t size)
 {
     mock_allocs_count++;
-    return calloc(1, size);
+    // return calloc(1, size);
+    return aligned_alloc(4096, size);
 }
 void kfree(void *ptr)
 {

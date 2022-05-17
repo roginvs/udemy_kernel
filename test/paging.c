@@ -21,7 +21,13 @@ int clean_paging_suite()
 
 int test_zero_allocations()
 {
-    CU_ASSERT(0 == mock_allocs_count);
+    CU_ASSERT_EQUAL(mock_allocs_count, 0);
+}
+
+int test_paging_new_4gb()
+{
+    struct paging_4gb_chunk *kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    paging_free_4gb(kernel_chunk);
 }
 void add_paging_suite()
 {
@@ -31,6 +37,7 @@ void add_paging_suite()
         exit(1);
     }
 
+    CU_ADD_TEST(pSuite, test_paging_new_4gb);
     CU_ADD_TEST(pSuite, test_zero_allocations);
 
     /* NOTE - ORDER IS IMPORTANT - MUST TEST fread() AFTER fprintf() */
