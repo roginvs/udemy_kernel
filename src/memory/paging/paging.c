@@ -66,6 +66,48 @@ static void paging_new_4gb_validate(struct paging_4gb_chunk *chunk_4gb)
 
 struct paging_4gb_chunk *paging_new_4gb(uint8_t flags)
 {
+    // We will allocate one big chunk of memory:
+    // 0 .. 4095: struct paging_4gb_chunk
+    // 4096 .. 4096*2-1 : page directory
+    // 4096*2 .. 4096*2 + 1024*4096 : entries
+    // First table, page
+    // 1024*4 = 4096 <- this is first table, page directory
+    // 1024 * 1024*4 = 4194304 <- the rest tables, 1024 page tables with 1024 items in each
+
+    uint32_t aligned_size_for_struct = 4096; // Assume this is greater that struct size
+    uint32_t table_size = sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE;
+    struct paging_4gb_chunk *chunk_4gb = kmalloc(aligned_size_for_struct +
+                                                 table_size +
+                                                 table_size * PAGING_TOTAL_ENTRIES_PER_TABLE);
+
+    chunk_4gb->directory_entry = (uint32_t *)((char *)chunk_4gb + aligned_size_for_struct);
+
+    char *pages_start = ((char *)chunk_4gb + aligned_size_for_struct + table_size);
+    for (int i = 0; i < PAGING_TOTAL_ENTRIES_PER_TABLE; i++)
+    {
+        uint32_t *page_table_location = (uint32_t *)(pages_start + i * table_size);
+        if ((uint32_t)page_table_location & 0xFFF != 0)
+        {
+            // Alignment failed
+            return 0;
+        }
+        chunk_4gb->directory_entry[i] = ((uint32_t)page_table_location) | flags;
+        for (int ii = 0; ii < PAGING_TOTAL_ENTRIES_PER_TABLE; ii++)
+        {
+            page_table_location[ii] = (i * PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE + ii * PAGING_PAGE_SIZE) | flags;
+        }
+    }
+
+    return chunk_4gb;
+}
+
+void paging_free_4gb(struct paging_4gb_chunk *chunk)
+{
+    kfree(chunk);
+}
+
+struct paging_4gb_chunk *paging_new_4gb_old(uint8_t flags)
+{
     uint32_t *directory = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
     int offset = 0;
     // print("Directory address = ");
@@ -112,7 +154,7 @@ void paging_switch(uint32_t *directory)
     current_directory = directory;
 }
 
-void paging_free_4gb(struct paging_4gb_chunk *chunk)
+void paging_free_4gb_old(struct paging_4gb_chunk *chunk)
 {
     for (int i = 0; i < 1024; i++)
     {

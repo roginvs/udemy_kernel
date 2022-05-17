@@ -143,3 +143,4 @@ clean:
 test:
 	gcc -m32 test/main.c -lcunit -I./test/mocks -o test/main.bin
 	./test/main.bin
+#	 valgrind ./test/main.bin
