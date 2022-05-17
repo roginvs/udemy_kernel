@@ -55,7 +55,7 @@ int test_paging_new_4gb()
 }
 void add_paging_suite()
 {
-    CU_pSuite pSuite = CU_add_suite("Suite_1", init_paging_suite, clean_paging_suite);
+    CU_pSuite pSuite = CU_add_suite("Paging", init_paging_suite, clean_paging_suite);
     if (NULL == pSuite)
     {
         exit(1);
