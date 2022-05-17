@@ -33,6 +33,9 @@ int test_paging_new_4gb()
         uint8_t test_flags = test_flags_array[i];
 
         struct paging_4gb_chunk *chunk_4gb = paging_new_4gb(test_flags);
+
+        CU_ASSERT_NOT_EQUAL(chunk_4gb, NULL);
+
         uint32_t *directory_table = chunk_4gb->directory_entry;
 
         // First table, 1024 items
