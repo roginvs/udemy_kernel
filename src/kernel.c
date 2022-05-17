@@ -48,16 +48,12 @@ struct tss tss;
 
 struct gdt gdt_real[PEACHOS_TOTAL_GDT_SEGMENTS];
 struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
-    {.base = 0x00, .limit = 0x00, .type = 0x00}, // NULL Segment
-    {.base = 0x00, .limit = 0xffffffff,
-     // Kernel code segment
-     // 0x9a = 10011010b
-     .type = 0x9a},
-    // 0x92 = 10010010b  Kernel data segment
-    {.base = 0x00, .limit = 0xffffffff, .type = 0x92},           // Kernel data segment
-    {.base = 0x00, .limit = 0xffffffff, .type = 0xf8},           // User code segment
-    {.base = 0x00, .limit = 0xffffffff, .type = 0xf2},           // User data segment
-    {.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xE9} // TSS Segment
+    {.base = 0x00, .limit = 0x00, .type = 0x00},                 // NULL Segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x9a},           // Kernel code segment 0x9a = 10011010b
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x92},           // Kernel data segment 0x92 = 10010010b
+    {.base = 0x00, .limit = 0xffffffff, .type = 0xf8},           // User code segment   0xF8 = 11111000b
+    {.base = 0x00, .limit = 0xffffffff, .type = 0xf2},           // User data segment   0xF2 = 11110010b
+    {.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xE9} // TSS Segment         0xE9 = 11101001b
 };
 
 void kernel_main()
@@ -89,7 +85,7 @@ void kernel_main()
     tss.esp0 = 0x600000;
     tss.ss0 = KERNEL_DATA_SELECTOR;
 
-    // Load the TSS
+    // Load the TSS, 0x28 = 40 = 5 (index of tss segment in GDT) * 8 (size of each GDT entry)
     tss_load(0x28);
 
     // Setup paging
