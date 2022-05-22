@@ -21,6 +21,8 @@ nasm -f bin ./boot.asm -o boot.bin
 
 ndisasm ./bin/boot.bin
 
+ndisasm -b32 blank.bin
+
 # Run
 
 qemu-system-x86_64 -hda boot.bin
