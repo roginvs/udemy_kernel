@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "task.h"
 #include "config.h"
+
 struct process
 {
     // The process id
@@ -20,9 +21,16 @@ struct process
     void *ptr;
 
     // The physical pointer to the stack memory
+    // Right now we have fixed stack size for everyprocess
+    // But why not to add a stack size here too?
+    // TODO: Why stack is the same for all tasks?
+    //  Or at this point we have only one task per each process?
     void *stack;
 
     // The size of the data pointed to by "ptr"
     uint32_t size;
 };
+
+int process_load_for_slot(const char *filename, struct process **process, int process_slot);
+
 #endif

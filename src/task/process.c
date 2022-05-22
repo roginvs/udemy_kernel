@@ -5,8 +5,8 @@
 #include "memory/memory.h"
 #include "string/string.h"
 #include "fs/file.h"
-#include "heap/kheap.h"
-#include "paging/paging.h"
+#include "memory/heap/kheap.h"
+#include "memory/paging/paging.h"
 #include "kernel.h"
 
 // The current process that is running
@@ -24,11 +24,11 @@ struct process *process_current()
     return current_process;
 }
 
-int process_get(int process_id)
+struct process *process_get(int process_id)
 {
     if (process_id < 0 || process_id >= PEACHOS_MAX_PROCESSES)
     {
-        return -EINVARG;
+        return NULL;
     }
 
     return processes[process_id];
@@ -81,9 +81,13 @@ static int process_load_data(const char *filename, struct process *process)
 int process_map_binary(struct process *process)
 {
     int res = 0;
+    // There is no segments in binary, so we map code+data into virtual address space
+    // That's why we add writeable flag
     paging_map_to(process->task->page_directory->directory_entry, (void *)PEACHOS_PROGRAM_VIRTUAL_ADDRESS, process->ptr, paging_align_address(process->ptr + process->size), PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL | PAGING_IS_WRITEABLE);
     return res;
 }
+
+/** Obviously this functions assumes that process structure is initialized */
 int process_map_memory(struct process *process)
 {
     int res = 0;
@@ -91,6 +95,36 @@ int process_map_memory(struct process *process)
     return res;
 }
 
+int process_get_free_slot()
+{
+    for (int i = 0; i < PEACHOS_MAX_PROCESSES; i++)
+    {
+        if (processes[i] == 0)
+            return i;
+    }
+
+    return -EISTKN;
+}
+
+int process_load(const char *filename, struct process **process)
+{
+    int res = 0;
+    int process_slot = process_get_free_slot();
+    if (process_slot < 0)
+    {
+        res = -EISTKN;
+        goto out;
+    }
+
+    res = process_load_for_slot(filename, process, process_slot);
+out:
+    return res;
+}
+
+/**
+ * @param process_slot
+ * This is index from global "processes" array
+ */
 int process_load_for_slot(const char *filename, struct process **process, int process_slot)
 {
     int res = 0;
@@ -130,6 +164,7 @@ int process_load_for_slot(const char *filename, struct process **process, int pr
     _process->id = process_slot;
 
     // Create a task
+    // TODO: Why _process here passed?
     task = task_new(_process);
     if (ERROR_I(task) == 0)
     {
@@ -138,12 +173,14 @@ int process_load_for_slot(const char *filename, struct process **process, int pr
 
     _process->task = task;
 
-    res = process_map_memory(process);
+    res = process_map_memory(_process);
     if (res < 0)
     {
         goto out;
     }
 
+    // TODO: Why do we need to set this pointer if caller of this function
+    //  already provides process_slot so caller can take this pointer from the "processes" array?
     *process = _process;
 
     // Add the process to the array
@@ -157,7 +194,7 @@ out:
             task_free(_process->task);
         }
 
-        // Free the process data
+        // TODO: Free the process data
     }
     return res;
 }
