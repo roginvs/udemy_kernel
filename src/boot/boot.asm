@@ -94,6 +94,10 @@ step2:
   mov eax, cr0
   or eax, 0x1
   mov cr0, eax
+  ; For some unknown reasons the next instruction works.
+  ; We enabled protected mode so "cs = code selector" register is still zero.
+  ; So the next instruction should trigger some error because CS points to zero entry in GDT
+  ; Or maybe no, TODO: check CPU documentation
   ; https://en.wikipedia.org/wiki/Protected_mode
   ; clear prefetch queue; (using far jump instruction jmp)
   jmp CODE_SEG:load32
