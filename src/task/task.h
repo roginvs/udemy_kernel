@@ -54,6 +54,17 @@ int task_page();
 void task_run_first_ever_task();
 
 void task_return(struct registers *regs);
+
+/**
+ Restores this registers from "struct registers"
+    edi;
+    esi;
+    ebp;
+    ebx;
+    edx;
+    ecx;
+    eax;
+ */
 void restore_general_purpose_registers(struct registers *regs);
 void user_registers();
 

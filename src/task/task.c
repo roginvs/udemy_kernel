@@ -124,8 +124,10 @@ void task_run_first_ever_task()
     {
         panic("task_run_first_ever_task(): No current task exists!\n");
     }
-
     task_switch(task_head);
+    // TODO: Why this function can access kernel memory
+    // if we already switched paging?
+    // Maybe we do not have paging enabled in kernel flags?
     task_return(&task_head->registers);
 }
 

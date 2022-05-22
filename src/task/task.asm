@@ -21,6 +21,7 @@ task_return:
     ; Push the stack pointer
     push dword [ebx+40]
 
+    ; TODO: Why we push current flags instead of "push dword [ebx+40-4]" ?
     ; Push the flags
     pushf
     pop eax
@@ -34,12 +35,17 @@ task_return:
     push dword [ebx+28]
 
     ; Setup some segment registers
+    ; Note: no need to change stack segment register because iret instruction do this for us
+    ;  and we already pushed stack segment above
     mov ax, [ebx+44]
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
+    
 
+    ; TODO: As I understand we should push address of this structure, so we have 
+    ; to "push ebx"? Or "push dword [ebp+4]"
     push dword [ebx+4]
     call restore_general_purpose_registers
     add esp, 4
