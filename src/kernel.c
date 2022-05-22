@@ -46,6 +46,10 @@ void panic(const char *msg)
 
 struct tss tss;
 
+// TODO: Do we have real address offsets in GDT or are they virtual?
+// Some forums says that it is virtual with no proof
+// Need to check cpu documentation to find this out
+
 struct gdt gdt_real[PEACHOS_TOTAL_GDT_SEGMENTS];
 struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
     {.base = 0x00, .limit = 0x00, .type = 0x00},                 // NULL Segment
