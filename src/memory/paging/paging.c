@@ -64,7 +64,7 @@ static void paging_new_4gb_validate(struct paging_4gb_chunk *chunk_4gb)
     // print("\npaging_new_4gb is ok\n");
 }
 
-struct paging_4gb_chunk *paging_new_4gb(uint8_t flags)
+struct paging_4gb_chunk *paging_new_4gb_one_chunk(uint8_t flags)
 {
     // We will allocate one big chunk of memory:
     // 0 .. 4095: struct paging_4gb_chunk
@@ -101,12 +101,12 @@ struct paging_4gb_chunk *paging_new_4gb(uint8_t flags)
     return chunk_4gb;
 }
 
-void paging_free_4gb(struct paging_4gb_chunk *chunk)
+void paging_free_4gb_one_chunk(struct paging_4gb_chunk *chunk)
 {
     kfree(chunk);
 }
 
-struct paging_4gb_chunk *paging_new_4gb_old(uint8_t flags)
+struct paging_4gb_chunk *paging_new_4gb(uint8_t flags)
 {
     uint32_t *directory = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
     int offset = 0;
@@ -154,7 +154,7 @@ void paging_switch(uint32_t *directory)
     current_directory = directory;
 }
 
-void paging_free_4gb_old(struct paging_4gb_chunk *chunk)
+void paging_free_4gb(struct paging_4gb_chunk *chunk)
 {
     for (int i = 0; i < 1024; i++)
     {
