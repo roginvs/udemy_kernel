@@ -114,6 +114,8 @@ int task_switch(struct task *task)
 int task_page()
 {
     user_registers();
+    // TODO: How can we change "current_task" in the next function if we
+    // already changed DS register in previous function?
     task_switch(current_task);
     return 0;
 }
