@@ -107,15 +107,18 @@ int task_free(struct task *task)
 int task_init(struct task *task, struct process *process)
 {
     memset(task, 0, sizeof(struct task));
-    // Map the entire 4GB address space to its self
 
+    // TODO: Maybe remove PAGING_IS_PRESENT flag?
+    // We do not need all entire address space, we will map virtual addresses
+
+    // Map the entire 4GB address space to its self
     task->page_directory = paging_new_4gb(PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     if (!task->page_directory)
     {
         return -EIO;
     }
 
-    // TODO: How about code segment?
+    // As we load binary (not elf) we have mixed code+data
 
     task->registers.ip = PEACHOS_PROGRAM_VIRTUAL_ADDRESS;
     task->registers.ss = USER_DATA_SEGMENT;

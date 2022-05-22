@@ -79,7 +79,7 @@ struct paging_4gb_chunk *paging_new_4gb(uint8_t flags)
     struct paging_4gb_chunk *chunk_4gb = kmalloc(aligned_size_for_struct +
                                                  table_size +
                                                  table_size * PAGING_TOTAL_ENTRIES_PER_TABLE);
-    if ((uint32_t)chunk_4gb & 0xFFF != 0)
+    if (((uint32_t)chunk_4gb & 0xFFF) != 0)
     {
         // Alignment failed
         return 0;
@@ -221,6 +221,7 @@ int paging_map_range(uint32_t *directory, void *virt, void *phys, int count, int
     for (int i = 0; i < count; i++)
     {
         res = paging_map(directory, virt, phys, flags);
+        // TODO: Why == instead of != ?
         if (res == 0)
             break;
         virt += PAGING_PAGE_SIZE;

@@ -117,6 +117,7 @@ int process_load(const char *filename, struct process **process)
     }
 
     res = process_load_for_slot(filename, process, process_slot);
+    // TODO: Maybe return procceses[process_slot] ?
 out:
     return res;
 }
