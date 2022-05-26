@@ -84,6 +84,17 @@ int process_map_binary(struct process *process)
     // There is no segments in binary, so we map code+data into virtual address space
     // That's why we add writeable flag
     paging_map_to(process->task->page_directory->directory_entry, (void *)PEACHOS_PROGRAM_VIRTUAL_ADDRESS, process->ptr, paging_align_address(process->ptr + process->size), PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL | PAGING_IS_WRITEABLE);
+
+    // TODO This is to make possible for programs to write directly to screen
+    // We also can allocate video buf for user program using kzalloc(4096)
+    char *video_mem_real_address = (char *)0xB8000;
+    paging_map_to(process->task->page_directory->directory_entry,
+                  (void *)0xB8000, video_mem_real_address,
+                  paging_align_address(video_mem_real_address +
+                                       // Size of terminal
+                                       20 * 80 * 2),
+                  PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL | PAGING_IS_WRITEABLE);
+
     return res;
 }
 
