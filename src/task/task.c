@@ -117,6 +117,7 @@ int task_page()
     user_registers();
     // TODO: How can we change "current_task" in the next function if we
     // already changed DS register in previous function?
+
     task_switch(current_task);
     return 0;
 }
@@ -131,6 +132,7 @@ void task_run_first_ever_task()
     // TODO: Why this function can access kernel memory
     // if we already switched paging?
     // Maybe we do not have paging enabled in kernel flags?
+    // Or maybe "translation lookaside buffer" still holds old value
     task_return(&task_head->registers);
 }
 
