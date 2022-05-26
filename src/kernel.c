@@ -131,7 +131,12 @@ void kernel_main()
     print("Kernel loaded\n");
     print_art();
 
-    print("Going idle");
+    struct process *process = 0;
+    int res = process_load("0:/blank.bin", &process);
+    if (res != PEACHOS_ALL_OK)
+        panic("Failed to load blank.bin\n");
+
+    task_run_first_ever_task();
 
     while (1)
     {

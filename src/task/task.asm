@@ -43,10 +43,7 @@ task_return:
     mov fs, ax
     mov gs, ax
     
-
-    ; TODO: As I understand we should push address of this structure, so we have 
-    ; to "push ebx"? Or "push dword [ebp+4]"
-    push dword [ebx+4]
+    push dword [ebp+4]
     call restore_general_purpose_registers
     add esp, 4
 
