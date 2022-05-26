@@ -112,6 +112,9 @@ int task_switch(struct task *task)
     return 0;
 }
 
+/**
+ * Looks like this function is not used
+ * */
 int task_page()
 {
     user_registers();
