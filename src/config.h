@@ -37,7 +37,7 @@
 //   + privilege_level (0-3)
 // So, for user segment it is 4th record in GDT, so offset is 4*8 = 32
 // Thus we want to run in ring 3 we add 0b11, so we have 32+3 = 35 = 0x23
-#define USER_DATA_SEGMENT 0x23
-#define USER_CODE_SEGMENT 0x1b
+#define USER_CODE_SEGMENT (3 * 8 + 3)
+#define USER_DATA_SEGMENT (4 * 8 + 3)
 
 #endif

@@ -55,9 +55,11 @@ struct tss tss;
 
 struct gdt gdt_real[PEACHOS_TOTAL_GDT_SEGMENTS];
 struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
-    {.base = 0x00, .limit = 0x00, .type = 0x00},                 // NULL Segment
-    {.base = 0x00, .limit = 0xffffffff, .type = 0x9a},           // Kernel code segment 0x9a = 10011010b
-    {.base = 0x00, .limit = 0xffffffff, .type = 0x92},           // Kernel data segment 0x92 = 10010010b
+    {.base = 0x00, .limit = 0x00, .type = 0x00},       // NULL Segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x9a}, // Kernel code segment 0x9a = 10011010b
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x92}, // Kernel data segment 0x92 = 10010010b
+    // TODO: According to my expriments flags here must be the same as in CS/DS registers
+    // If there is a mismatch then interrupt happens
     {.base = 0x00, .limit = 0xffffffff, .type = 0xf8},           // User code segment   0xF8 = 11111000b
     {.base = 0x00, .limit = 0xffffffff, .type = 0xf2},           // User data segment   0xF2 = 11110010b
     {.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xE9} // TSS Segment         0xE9 = 11101001b

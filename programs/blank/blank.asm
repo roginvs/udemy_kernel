@@ -5,7 +5,9 @@ section .asm
 global _start
 
 _start:
-
+# Here is an example of privileged instruction
+#     mov ecx, 0xB8000
+#     INVLPG [ecx]
 
 print_message:
     mov esi, msg1
