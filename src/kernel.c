@@ -8,12 +8,15 @@
 #include "memory/memory.h"
 #include "disk/disk.h"
 #include "string/string.h"
+#include "task/task.h"
+#include "task/process.h"
 #include "fs/file.h"
 #include "./terminal.h"
 #include "task/tss.h"
 #include "memory/memory.h"
 #include "gdt/gdt.h"
 #include "config.h"
+#include "status.h"
 
 void echo_keyboard()
 {
@@ -60,6 +63,27 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
     {.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xE9} // TSS Segment         0xE9 = 11101001b
 };
 
+void print_art()
+{
+
+    int artFd = fopen("0:/art.txt", "r");
+
+    if (artFd)
+    {
+        struct file_stat sb;
+        fstat(artFd, &sb);
+
+        char *buf = kzalloc(sb.filesize + 1);
+
+        memset(buf, 0x0, sb.filesize + 1);
+        fread(buf, sb.filesize, 1, artFd);
+
+        terminal_initialize();
+        print(buf);
+        kfree(buf);
+    }
+}
+
 void kernel_main()
 {
     terminal_initialize();
@@ -101,37 +125,12 @@ void kernel_main()
     // Enable paging
     enable_paging();
 
-    enable_interrupts();
+    // TODO: Why disabled?
+    // enable_interrupts();
 
     print("Kernel loaded\n");
+    print_art();
 
-    int fd = fopen("0:/folderA/folderB/art2.txt", "r");
-    // int fd = fopen("0:/hello.txt", "r");
-
-    if (fd)
-    {
-        char buf[100000];
-        fread(buf, 68 * 15, 1, fd);
-        // terminal_initialize();
-        // memset(buf, 'A', 1000);
-        // fread(buf, 68 * 100, 1, fd);
-        // print(buf);
-        // print("\n");
-        // fread(buf, 68 * 20, 1, fd);
-        // fread(buf, 68 * 20, 1, fd);
-        // fread(buf, 68 * 20, 1, fd);
-
-        memset(buf, 0x0, 100000);
-        fread(buf, 68 * 10000000, 1, fd);
-        //  fread(buf, 1000, 1, fd);
-        print(buf);
-
-        // struct file_stat s;
-        // fstat(fd, &s);
-        // fclose(fd);
-
-        // print("testing\n");
-    }
     print("Going idle");
 
     while (1)
