@@ -12,6 +12,10 @@ target remote | qemu-system-i386 -hda ./bin/os.bin -S -gdb stdio
 
 c
 
-layout asm
+# layout asm
+layout split
+
+# Breakpoint on user program
+break *0x400000
 
 stepi
