@@ -61,6 +61,9 @@ layout prev # show code
 finish # To exit from current function
 next # Step without going into function
 
+x/10 0x400018 # Show memory at this address
+x/32b 0x400018 # Show bytes memory at this address
+
 # Debug run
 
 ## This is what happens on startup
