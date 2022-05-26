@@ -135,6 +135,10 @@ gdt_descriptor:
 
 [BITS 32]
 load32:
+  ; Here we can use privileged instruction, example:
+  ;  mov ecx, 0xB8000
+  ;  INVLPG [ecx]
+
   mov eax, 10 ; Starting sector to load 
   mov ecx, 100 ; Count
   mov edi, 0x0100000 ; 1 megabyte
