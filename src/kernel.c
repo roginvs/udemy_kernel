@@ -125,7 +125,7 @@ void kernel_main()
     // Enable paging
     enable_paging();
 
-    // TODO: Why disabled?
+    // TODO: Enable me when first program loads
     // enable_interrupts();
 
     print("Kernel loaded\n");
