@@ -7,7 +7,12 @@ global _start
 _start:
 # Here is an example of privileged instruction
 #     mov ecx, 0xB8000
-#     INVLPG [ecx]
+#     INVLPG [ecx]    
+    jmp print_message ; TODO: Why "call" does not work?
+
+label:
+    jmp label
+
 
 print_message:
     mov esi, msg1
@@ -20,10 +25,8 @@ print_message:
       mov [ecx], al
       add ecx, 2
     jmp .loop
-   .done:
-      
-
-label:
+    .done:
     jmp label
+      
 
 msg1 db "User program started",0
