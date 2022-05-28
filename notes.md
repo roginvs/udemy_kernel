@@ -8,6 +8,7 @@
 # TODO
 
 - How CPU determinate what privilege level it runs? Is it CS + GDT?
+- Why interrupt handlers can access user stack memory? User stack is different per task, is it?
 - Currently user memory lower part is mapped 1-to-1 to real memory, and this is used in
   the interrupt handlers and so on. Can we do kernel without mixing user memory and kernel memory ranges? Having an address from user land we can calculate what address it is in the kernel land
 - Track down in the debugger what happens when interrupt is called, what values registers have and so on
