@@ -64,8 +64,9 @@ void *isr80h_handler(int command, struct interrupt_frame *frame)
 {
     void *res = 0;
     kernel_page();
-    // TODO: As usual, this frame pointer is on user land stack, no?
-    // Why it works here?
+    // TODO: Is frame pointer on task stack?
+    // Probably no, check TSS
+    // https://stackoverflow.com/questions/70662563/when-kernel-stacks-esp-is-stored-to-tss-for-interrupt-return-iret
     task_current_save_state(frame);
     res = isr80h_handle_command(command, frame);
     task_page();
