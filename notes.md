@@ -38,7 +38,7 @@ nasm -f bin ./boot.asm -o boot.bin
 
 ndisasm ./bin/boot.bin
 
-ndisasm -b32 blank.bin
+ndisasm -u blank.bin
 
 # Run
 
@@ -50,6 +50,8 @@ gdb
 target remote | qemu-system-x86_64 -hda ./boot.bin -S -gdb stdio
 layout asm
 info registers
+
+info registers cs eip ss esp ds es
 
 # Debug run (new)
 
