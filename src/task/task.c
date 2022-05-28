@@ -239,6 +239,9 @@ int task_init(struct task *task, struct process *process)
 
 void *task_get_stack_item(struct task *task, int index)
 {
+    // This variable is created on kernel stack
+    // Which start from 0x600000 as defined in TSS (my guess)
+    // So we can write to this variable when we switch pages
     void *result = 0;
 
     uint32_t *sp_ptr = (uint32_t *)task->registers.esp;
