@@ -8,7 +8,8 @@ _start:
 # Here is an example of privileged instruction
 #     mov ecx, 0xB8000
 #     INVLPG [ecx]    
-    jmp print_message ; TODO: Why "call" does not work?
+    ; TODO: Why "call" does not work?
+    # jmp print_message 
 
 label:
     mov eax, 0
