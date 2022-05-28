@@ -31,6 +31,10 @@
   - paging.c
   - paging.h
   - process.c
+- Initial steps to do:
+  - Check x86 docs for protected mode (why GDT entry have bits and selector registers have latest 2 bits?)
+  - Write kernel memory documentation (what and where is mapped, things like kernel stack and so on)
+  - Do a simple user program with memory starting from 0x1000 (just as example)
 
 # fat notes
 
