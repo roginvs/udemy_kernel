@@ -37,6 +37,7 @@ _start:
   
   jmp $
 
+global kernel_registers
 kernel_registers:
     mov ax, 10
     mov ds, ax
