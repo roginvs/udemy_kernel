@@ -9,19 +9,18 @@ _start:
 #     mov ecx, 0xB8000
 #     INVLPG [ecx]    
 
-    call print_message  ; call did not work before because we did not map stack before!
+    ; call print_message  ; call did not work before because we did not map stack before!
 
 label:
-    push 20
-    push 30
-    mov eax, 0 ; Command 0 SUM
+    push message
+    mov eax, 1 ; Command print
     int 0x80
-    add esp, 8
+    add esp, 4
     
     jmp $
 
 
-print_message:
+print_message_directly_to_video_memory:
     mov esi, msg1
     mov ecx, 0xB8000
    ; mov ecx, 0x400020
@@ -35,5 +34,6 @@ print_message:
     .done:
     ret
       
-
-msg1 db "User program started",0
+section .data
+    message: db 'I can talk with the kernel!', 0 
+    msg1: db "User program started",0
