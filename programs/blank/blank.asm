@@ -11,7 +11,10 @@ _start:
     jmp print_message ; TODO: Why "call" does not work?
 
 label:
-    jmp label
+    mov eax, 0
+    int 0x80
+    
+    jmp $
 
 
 print_message:
