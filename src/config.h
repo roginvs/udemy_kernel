@@ -40,4 +40,6 @@
 #define USER_CODE_SEGMENT (3 * 8 + 3)
 #define USER_DATA_SEGMENT (4 * 8 + 3)
 
+#define PEACHOS_MAX_ISR80H_COMMANDS 1024
+
 #endif
