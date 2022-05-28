@@ -8,8 +8,8 @@ _start:
 # Here is an example of privileged instruction
 #     mov ecx, 0xB8000
 #     INVLPG [ecx]    
-    ; TODO: Why "call" does not work?
-    ; jmp print_message 
+
+    call print_message  ; call did not work before because we did not map stack before!
 
 label:
     push 20
@@ -33,7 +33,7 @@ print_message:
       add ecx, 2
     jmp .loop
     .done:
-    jmp label
+    ret
       
 
 msg1 db "User program started",0
