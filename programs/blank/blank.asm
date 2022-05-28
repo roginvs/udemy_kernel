@@ -9,7 +9,7 @@ _start:
 #     mov ecx, 0xB8000
 #     INVLPG [ecx]    
     ; TODO: Why "call" does not work?
-    # jmp print_message 
+    ; jmp print_message 
 
 label:
     mov eax, 0
