@@ -83,6 +83,7 @@ break \*0x7C00 # Break on this address
 print ptr # print variable name
 
 info register eax # print register
+print $eax # print register
 
 stepi
 
