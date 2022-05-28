@@ -21,6 +21,16 @@
   - stack segment
   - GDT page (i suppose we need this because segment selectors points into GDT)
   - maybe interrupts table too?
+- Files can be changed:
+  - idt.asm
+  - idt.c
+  - idt.h
+  - task.c
+  - task.h
+  - task.asm
+  - paging.c
+  - paging.h
+  - process.c
 
 # fat notes
 
