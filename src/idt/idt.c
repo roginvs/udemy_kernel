@@ -56,7 +56,7 @@ void idt_init()
     idt_load(&idtr_descriptor);
 }
 
-void isr80h_handle_command(int command, struct interrupt_frame *frame)
+void *isr80h_handle_command(int command, struct interrupt_frame *frame)
 {
 }
 
