@@ -50,6 +50,9 @@ global isr80h_wrapper
 ; and gate clears IF flag (original flags are on the stack and restored via iret)
 
 isr80h_wrapper:
+    ; TODO: As far as I understand we are still on user program memory,
+    ; i.e. paging and stack segment
+
     ; INTERRUPT FRAME START
     ; ALREADY PUSHED TO US BY THE PROCESSOR UPON ENTRY TO THIS INTERRUPT
     ; uint32_t ip

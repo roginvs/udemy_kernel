@@ -5,6 +5,13 @@
 - try to load kernel from disk using real mode
 - try page fault
 
+# TODO
+
+- How CPU determinate what privilege level it runs? Is it CS + GDT?
+- Currently user memory lower part is mapped 1-to-1 to real memory, and this is used in
+  the interrupt handlers and so on. Can we do kernel without mixing user memory and kernel memory ranges?
+- Track down in the debugger what happens when interrupt is called, what values registers have and so on
+
 # fat notes
 
 https://github.com/nibblebits/PeachOS/commit/9d38819b6985ea5c154382dbc34d2635925c1983
