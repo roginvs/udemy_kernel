@@ -16,6 +16,15 @@ extern void int21h();
 extern void no_interrupt();
 extern void isr80h_wrapper();
 
+char *get_idtr_descriptor_addr()
+{
+    return (char *)&idtr_descriptor;
+}
+char *get_idt_descriptors_addr()
+{
+    return (char *)idt_descriptors;
+}
+
 void int21h_handler()
 {
     print("Keyboard pressed");

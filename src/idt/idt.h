@@ -47,4 +47,7 @@ void enable_interrupts();
 void disable_interrupts();
 void isr80h_register_command(int command_id, ISR80H_COMMAND command);
 
+char *get_idtr_descriptor_addr();
+char *get_idt_descriptors_addr();
+
 #endif

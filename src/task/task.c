@@ -219,11 +219,77 @@ int task_init(struct task *task, struct process *process)
     // We do not need all entire address space, we will map virtual addresses
 
     // Map the entire 4GB address space to its self
-    task->page_directory = paging_new_4gb(PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    task->page_directory = paging_new_4gb(PAGING_IS_PRESENT);
     if (!task->page_directory)
     {
         return -EIO;
     }
+    // PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL
+    // print("MAP STARTED ");
+
+    /*
+    for (uint32_t addr = 0xFF000; addr < 0x1900000; addr += 4096)
+    {
+        paging_map(task->page_directory,
+                   (char *)addr,
+                   (char *)addr,
+                   PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    }
+    // */
+    /*
+    for (uint32_t addr = 0xF0000000; addr < 0xFFFFF000; addr += 4096)
+    {
+        paging_map(task->page_directory,
+                   (char *)addr,
+                   (char *)addr,
+                   0);
+    }
+    */
+
+    // print("DONE ");
+
+    // Cannot access memory at address 0x1050fd
+    /*
+        char *addr;
+        addr = get_gdt_address();
+        addr = (char *)((uint32_t)addr & 0xFFFFF000); // Align to page
+        paging_map(task->page_directory, addr, addr, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+        addr += 4096;
+        paging_map(task->page_directory, addr, addr, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+
+        addr = get_tss_address();
+        addr = (char *)((uint32_t)addr & 0xFFFFF000); // Align to page
+        paging_map(task->page_directory, addr, addr, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+        addr += 4096;
+        paging_map(task->page_directory, addr, addr, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+
+        addr = get_idt_descriptors_addr();
+        addr = (char *)((uint32_t)addr & 0xFFFFF000); // Align to page
+        paging_map(task->page_directory, addr, addr, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+        addr += 4096;
+        paging_map(task->page_directory, addr, addr, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+
+        addr = get_idtr_descriptor_addr();
+        addr = (char *)((uint32_t)addr & 0xFFFFF000); // Align to page
+        paging_map(task->page_directory, addr, addr, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+        addr += 4096;
+        paging_map(task->page_directory, addr, addr, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    */
+    /*
+        addr = (char *)&idt_descriptors;
+        addr = (char *)((uint32_t)addr & 0xFFFFF000); // Align to page
+        paging_map_to(task->page_directory, addr, addr, addr + 4096, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+
+        addr = (char *)&idtr_descriptor;
+        addr = (char *)((uint32_t)addr & 0xFFFFF000); // Align to page
+        paging_map_to(task->page_directory, addr, addr, addr + 4096, PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    */
+    // Crashes at paging_switch, 0x1050fd
+    /*
+
+    eax = 0x1413000
+
+    */
 
     // As we load binary (not elf) we have mixed code+data
 

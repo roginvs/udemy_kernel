@@ -11,6 +11,8 @@ void panic(const char *msg);
 
 void kernel_page();
 void kernel_registers();
+char *get_gdt_address();
+char *get_tss_address();
 
 #define ERROR(value) (void *)(value)
 #define ERROR_I(value) (int)(value)

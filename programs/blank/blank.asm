@@ -7,6 +7,8 @@ global _start
 _start:
     nop
     nop
+    mov eax, 0x7C00
+    mov ebx, [eax]
 # Here is an example of privileged instruction
 #     mov ecx, 0xB8000
 #     INVLPG [ecx]    

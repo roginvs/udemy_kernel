@@ -67,6 +67,15 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
     {.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xE9} // TSS Segment         0xE9 = 11101001b
 };
 
+char *get_gdt_address()
+{
+    return (char *)&gdt_real;
+}
+char *get_tss_address()
+{
+    return (char *)&tss;
+}
+
 void kernel_page()
 {
     kernel_registers();
