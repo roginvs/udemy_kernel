@@ -198,6 +198,9 @@ https://wiki.osdev.org/ATA_PIO_Mode
 Memory map
 https://wiki.osdev.org/Memory_Map_(x86)
 
+Intel references
+https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+
 =====
 
 ## Cherry-pick commits
