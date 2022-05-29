@@ -215,9 +215,15 @@ int task_init(struct task *task, struct process *process)
 {
     memset(task, 0, sizeof(struct task));
 
-    // TODO: Maybe remove PAGING_IS_PRESENT flag?
-    // We do not need all entire address space, we will map virtual addresses
-
+    // We need kernel address to be mapped because we continue execution
+    //   between then moment we switch page and call "iret".
+    // We can remove PAGING_ACCESS_FROM_ALL from here and it will work
+    //   (need to add PAGING_ACCESS_FROM_ALL into directory
+    //       entry by default in paging_new_4gb function)
+    //
+    // Check "experiment_with_paging_flags" branch
+    //
+    //
     // Map the entire 4GB address space to its self
     task->page_directory = paging_new_4gb(PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     if (!task->page_directory)
