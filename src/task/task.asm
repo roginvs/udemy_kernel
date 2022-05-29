@@ -23,10 +23,7 @@ task_return:
 
     ; TODO: Why we push current flags instead of "push dword [ebx+40-4]" ?
     ; Push the flags
-    pushf
-    pop eax
-    or eax, 0x200
-    push eax
+    push dword [ebx+36]
 
     ; Push the code segment
     push dword [ebx+32]
