@@ -12,7 +12,8 @@
     "string.h": "c",
     "config.h": "c",
     "cunit.h": "c",
-    "paging.h": "c"
+    "paging.h": "c",
+    "gdt.h": "c"
   },
   "editor.formatOnSave": true
 }
