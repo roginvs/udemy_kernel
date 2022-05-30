@@ -58,7 +58,8 @@ no_interrupt:
 %endmacro
 
 %assign i 0
-%rep 512
+; 512=PEACHOS_TOTAL_INTERRUPTS
+%rep 512 
     interrupt i
 %assign i i+1
 %endrep
@@ -67,7 +68,7 @@ no_interrupt:
 extern isr80h_handler
 global isr80h_wrapper
 
-extern interrupt_handler
+
 ; No need to have "cli" instruction because of flags on interrupt handlers
 ; idt_descriptor->type_attr, lower 4 bits = "32 bit interrupt gate"
 ; and gate clears IF flag (original flags are on the stack and restored via iret)
