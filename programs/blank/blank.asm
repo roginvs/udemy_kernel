@@ -4,22 +4,32 @@ section .asm
 
 global _start
 
-_start:
-    nop
-    nop
 # Here is an example of privileged instruction
 #     mov ecx, 0xB8000
 #     INVLPG [ecx]    
 
     ; call print_message  ; call did not work before because we did not map stack before!
 
-label:
+_start:
+    nop
+    nop
+    call getkey
+
+
     push message
     mov eax, 1 ; Command print
     int 0x80
     add esp, 4
     
     jmp $
+
+getkey:
+    mov eax, 2 ; Command getkey
+    int 0x80
+    cmp eax, 0x00
+    je getkey
+    ret
+
 
 
 print_message_directly_to_video_memory:
