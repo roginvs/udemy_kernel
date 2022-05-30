@@ -114,6 +114,7 @@ tmp_res: dd 0
 global interrupt_pointer_table
 interrupt_pointer_table:
 %assign i 0
+; 512=PEACHOS_TOTAL_INTERRUPTS
 %rep 512
     interrupt_array_entry i
 %assign i i+1
