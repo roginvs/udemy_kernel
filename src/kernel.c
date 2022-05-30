@@ -152,6 +152,7 @@ void kernel_main()
 
     print("Kernel loaded\n");
     print_art();
+    terminal_goto(0, 0);
 
     idt_register_interrupt_callback(0x20, pic_timer_callback);
 

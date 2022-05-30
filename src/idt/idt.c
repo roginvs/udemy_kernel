@@ -38,6 +38,7 @@ void interrupt_handler(int interrupt, struct interrupt_frame *frame)
     {
         task_current_save_state(frame);
         interrupt_callbacks[interrupt](frame);
+        // TODO: Restore task state maybe?
     }
 
     task_page();

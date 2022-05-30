@@ -10,6 +10,7 @@ void terminal_writechar(char c, char colour);
 void terminal_writehex(uint8_t c, uint8_t color);
 void terminal_initialize();
 void terminal_writechar(char c, char colour);
+void terminal_goto(int x, int y);
 
 void print(const char *str);
 
