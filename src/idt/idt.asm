@@ -35,7 +35,7 @@ no_interrupt:
     iret
 
 
-
+extern interrupt_handler
 %macro interrupt 1
     ; TODO: Do we need those to be global? No need as for me
     global int%1
