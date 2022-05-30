@@ -37,6 +37,7 @@ no_interrupt:
 
 
 %macro interrupt 1
+    ; TODO: Do we need those to be global? No need as for me
     global int%1
     int%1:
         ; INTERRUPT FRAME START
