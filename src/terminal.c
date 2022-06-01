@@ -22,12 +22,36 @@ void terminal_goto(int x, int y)
     terminal_col = y;
 }
 
+void terminal_backspace()
+{
+    if (terminal_row == 0 && terminal_col == 0)
+    {
+        return;
+    }
+
+    if (terminal_col == 0)
+    {
+        terminal_row -= 1;
+        terminal_col = VGA_WIDTH;
+    }
+
+    terminal_col -= 1;
+    terminal_writechar(' ', 15);
+    terminal_col -= 1;
+}
+
 void terminal_writechar(char c, char colour)
 {
     if (c == '\n')
     {
         terminal_row += 1;
         terminal_col = 0;
+        return;
+    }
+
+    if (c == 0x08)
+    {
+        terminal_backspace();
         return;
     }
 
@@ -39,6 +63,7 @@ void terminal_writechar(char c, char colour)
         terminal_row += 1;
     }
 }
+
 void terminal_initialize()
 {
     video_mem = (uint16_t *)(0xB8000);
