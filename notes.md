@@ -7,11 +7,33 @@
 
 # TODO
 
-- How CPU determinate what privilege level it runs? Is it CS + GDT?
+- How CPU determinate what privilege level it runs? Is it CS + GDT? Yes.
 - Why interrupt handlers can access user stack memory? User stack is different per task, is it?
 - Track down in the debugger what happens when interrupt is called, what values registers have and so on
 
-# TODO user memory mapping
+# TODO
+
+- Proper ELF loader, with setting up executable/readonly bits
+
+# TODO
+
+Cleanup task switching, for example:
+
+- add two kernel heaps, one is below user memory mapped addresses and another is probably above
+  (this is to be able to access kernel data from user memory paging)
+  (second heap can be for user program data and etc, should be accesses via manual calculation
+  from virtual address into physical)
+- explicit understanding what paging we have now, no need to double switch pages
+
+# TODO
+
+Write document with memory ranges, including hardware reserved addresses, kernel base, kernel heap,
+kernel stack, and etc
+
+# User memory mapping
+
+No need, we still need kernel memory to be mapped, just because when we change memory table we
+still executing in the kernel space.
 
 - Currently user memory lower part is mapped 1-to-1 to real memory, and this is used in
   the interrupt handlers and so on. Can we do kernel without mixing user memory and kernel memory ranges? Having an address from user land we can calculate what address it is in the kernel land

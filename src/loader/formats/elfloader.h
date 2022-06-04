@@ -15,11 +15,13 @@ struct elf_file
 
     /**
      * The physical memory address that this elf file is loaded at
+     * ELF File entirely
      */
     void* elf_memory;
 
     /**
      * The virtual base address of this binary
+     * First loadable section(segment)
      */
     void* virtual_base_address;
 
