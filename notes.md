@@ -91,6 +91,7 @@ info registers cs eip ss esp ds es
 
 # Debug run (new)
 
+```
 cd bin
 gdb
 add-symbol-file ../build/kernelfull.o 0x100000
@@ -122,8 +123,13 @@ x/32b 0x400018 # Show bytes memory at this address
 x /20xb $eax # Show memory at eax
 
 info registers ss esp
-print _(uint32_t_)($esp - 4)
+print *(uint32_t*)($esp + 4)
 set $edi = 0xAABBCCDD
+x /20xb $esp # This is stack immediately after int instruction, 5 dwords
+x /32xb $esp # Same to show addresses where TSS kernel stack begins, 0x600000
+x /32xb $esp # pushad decreased stack pointer by 32 bytes = 8 registers
+x /52xb $esp
+```
 
 # Debug run
 

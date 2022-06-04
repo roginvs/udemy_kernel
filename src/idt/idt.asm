@@ -45,14 +45,23 @@ extern interrupt_handler
         nop
         ; INTERRUPT FRAME START
         ; ALREADY PUSHED TO US BY THE PROCESSOR UPON ENTRY TO THIS INTERRUPT
-        ; uint32_t ip
-        ; uint32_t cs;
-        ; uint32_t flags
-        ; uint32_t sp;
-        ; uint32_t ss;
+        ; uint32_t ip; This is $esp
+        ; uint32_t cs; This is $esp+4  
+        ; uint32_t flags; This is $esp+8
+        ; uint32_t sp; This is $esp+12
+        ; uint32_t ss; This is $esp+16
+        ; So CPU does this:
+        ;   push ss
+        ;   push sp
+        ;   push flags
+        ;   push cs
+        ;   push ip
+
         ; Pushes the general purpose registers to the stack
         pushad
         ; Interrupt frame end
+
+        ; Push the stack pointer so that we are pointing to the interrupt frame
         push esp
         push dword %1
         call interrupt_handler
@@ -78,16 +87,14 @@ global isr80h_wrapper
 ; and gate clears IF flag (original flags are on the stack and restored via iret)
 
 isr80h_wrapper:
-    ; TODO: As far as I understand we are still on user program memory,
-    ; i.e. paging and stack segment
+    nop
+    nop
+    ; We are still on user program memory paging
+    ; But CS and SS are changed
+    ; Other selectors DS,ES,FS,GS are still the same
 
-    ; INTERRUPT FRAME START
-    ; ALREADY PUSHED TO US BY THE PROCESSOR UPON ENTRY TO THIS INTERRUPT
-    ; uint32_t ip
-    ; uint32_t cs;
-    ; uint32_t flags
-    ; uint32_t sp;
-    ; uint32_t ss;
+    ; Check interrupt_handler comments for registers in stack
+    
     ; Pushes the general purpose registers to the stack
     pushad
     
