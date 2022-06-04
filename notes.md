@@ -27,6 +27,10 @@ Cleanup task switching, for example:
 
 # TODO
 
+- Why there is separate handler for interrupt 80
+
+# TODO
+
 Write document with memory ranges, including hardware reserved addresses, kernel base, kernel heap,
 kernel stack, and etc
 
