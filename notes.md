@@ -17,6 +17,12 @@
 
 # TODO
 
+- Try to implement mmap
+- Should be quite straighforward
+- Except the fact that needs pagefile or way to unload pages from mmap
+
+# TODO
+
 Cleanup task switching, for example:
 
 - add two kernel heaps, one is below user memory mapped addresses and another is probably above
