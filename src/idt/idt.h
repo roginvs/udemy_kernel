@@ -24,6 +24,7 @@ struct idtr_desc
 
 struct interrupt_frame
 {
+    // Those 8 registers are pushed by our "pushad" instruction in the interrupt handler
     uint32_t edi;
     uint32_t esi;
     uint32_t ebp;
@@ -35,6 +36,7 @@ struct interrupt_frame
     uint32_t edx;
     uint32_t ecx;
     uint32_t eax;
+    // Those 5 registers are pushed by CPU when "int" instruction is called
     uint32_t ip;
     uint32_t cs;
     uint32_t flags;
