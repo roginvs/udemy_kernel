@@ -40,6 +40,9 @@ extern interrupt_handler
     ; TODO: Do we need those to be global? No need as for me
     global int%1
     int%1:
+        nop
+        nop
+        nop
         ; INTERRUPT FRAME START
         ; ALREADY PUSHED TO US BY THE PROCESSOR UPON ENTRY TO THIS INTERRUPT
         ; uint32_t ip

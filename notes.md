@@ -121,6 +121,10 @@ x/10 0x400018 # Show memory at this address
 x/32b 0x400018 # Show bytes memory at this address
 x /20xb $eax # Show memory at eax
 
+info registers ss esp
+print _(uint32_t_)($esp - 4)
+set $edi = 0xAABBCCDD
+
 # Debug run
 
 ## This is what happens on startup
