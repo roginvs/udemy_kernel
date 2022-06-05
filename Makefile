@@ -19,10 +19,6 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 	# df --block-size=512 --total --all /mnt/d
 	# for i in `seq 1 100`; do sudo touch /mnt/d/Q$$i.txt; done # To add multiple files to test
 	sudo cp ./hello.txt /mnt/d
-	sudo mkdir -p /mnt/d/folderA/folderB
-	sudo cp ./art1.txt /mnt/d/folderA/folderB
-	sudo cp ./art2.txt /mnt/d/folderA/folderB
-	sudo cp ./art3.txt /mnt/d/folderA/folderB
 	sudo cp ./art.txt /mnt/d
 	sudo cp ./programs/blank/blank.elf /mnt/d
 	ls -la /mnt/d
