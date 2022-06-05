@@ -156,6 +156,7 @@ int elf_process_loaded(struct elf_file* elf_file)
         goto out;
     }
 
+    // TODO Maybe elf_process_pheader ?
     res = elf_process_pheaders(elf_file);
     if (res < 0)
     {
