@@ -129,7 +129,7 @@ int elf_process_pheader(struct elf_file* elf_file, struct elf32_phdr* phdr)
         break;
     }
 }
-int elf_process_pheader(struct elf_file* elf_file)
+int elf_process_pheaders(struct elf_file* elf_file)
 {
     int res = 0;
     struct elf_header* header = elf_header(elf_file);
@@ -156,7 +156,6 @@ int elf_process_loaded(struct elf_file* elf_file)
         goto out;
     }
 
-    // TODO Maybe elf_process_pheader ?
     res = elf_process_pheaders(elf_file);
     if (res < 0)
     {
