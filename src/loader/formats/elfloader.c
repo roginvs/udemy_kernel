@@ -198,6 +198,7 @@ int elf_load(const char* filename, struct elf_file** file_out)
 
     *file_out = elf_file;
 out:
+    // TODO if (ISERROR(res)) kfree elf_file
     fclose(fd);
     return res;
 }
