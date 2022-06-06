@@ -14,7 +14,8 @@
     "cunit.h": "c",
     "paging.h": "c",
     "gdt.h": "c",
-    "disk.h": "c"
+    "disk.h": "c",
+    "elfloader.h": "c"
   },
   "editor.formatOnSave": true
 }
