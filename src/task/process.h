@@ -4,7 +4,7 @@
 #include "task.h"
 #include "config.h"
 
-// TODO: Why do actually need to separate process filetype when process is loaded?
+// Process filetype used on loading stage
 #define PROCESS_FILETYPE_ELF 0
 #define PROCESS_FILETYPE_BINARY 1
 
