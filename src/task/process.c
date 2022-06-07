@@ -72,6 +72,11 @@ void *process_malloc(struct process *process, size_t size)
     }
 
     process->allocations[index] = ptr;
+
+    // LOL we need to map this memory in user program space
+    // This ptr is kernel memory address
+    // It works in original course because it task_init it adds access to all
+
     return ptr;
 }
 
