@@ -67,6 +67,7 @@ void *process_malloc(struct process *process, size_t size)
     int index = process_find_free_allocation_index(process);
     if (index < 0)
     {
+        // TODO: Free memory ptr
         return 0;
     }
 
