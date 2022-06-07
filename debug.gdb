@@ -1,5 +1,9 @@
 
 add-symbol-file ./build/kernelfull.o 0x100000
+add-symbol-file ./programs/blank/blank.elf
+add-symbol-file ./programs/stdlib/build/peachos.o
+add-symbol-file ./programs/stdlib/build/start.o
+add-symbol-file ./programs/stdlib/build/stdlib.o
 
 set disassembly-flavor intel
 
