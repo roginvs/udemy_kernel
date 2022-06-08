@@ -1,6 +1,7 @@
 #include "peachos.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "stdbool.h"
 
 int main(int argc, char **argv)
 {
@@ -14,16 +15,16 @@ int main(int argc, char **argv)
 
     void *ptr = malloc(512);
     // strcpy(ptr, "hello world");
-    print(ptr);
-
+    //  print(ptr);
     free(ptr);
+
+    char buf[1024];
+    peachos_terminal_readline(buf, sizeof(buf), true);
+
+    print(buf);
 
     while (1)
     {
-        if (getkey() != 0)
-        {
-            print("key was pressed\n");
-        }
     }
     return 0;
 }
