@@ -13,6 +13,7 @@ extern void *interrupt_pointer_table[PEACHOS_TOTAL_INTERRUPTS];
 
 static INTERRUPT_CALLBACK_FUNCTION interrupt_callbacks[PEACHOS_TOTAL_INTERRUPTS];
 
+// TODO: Should we initialize this to zero?
 static ISR80H_COMMAND isr80h_commands[PEACHOS_MAX_ISR80H_COMMANDS];
 
 extern void idt_load(struct idtr_desc *ptr);
