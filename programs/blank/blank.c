@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     putchar('Z');
 
     void *ptr = malloc(512);
-    strcpy(ptr, "hello world");
+    // strcpy(ptr, "hello world");
     print(ptr);
 
     free(ptr);
