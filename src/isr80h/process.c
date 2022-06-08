@@ -19,6 +19,8 @@ void *isr80h_command6_process_load_start(struct interrupt_frame *frame)
     strcpy(path, "0:/");
     strcpy(path + 3, filename);
 
+    // Here we just replace this process instead of starting it as separate task
+
     struct process *process = 0;
     res = process_load_switch(path, &process);
     if (res < 0)
@@ -28,6 +30,10 @@ void *isr80h_command6_process_load_start(struct interrupt_frame *frame)
 
     task_switch(process->task);
     task_return(&process->task->registers);
+
+    // In the current setup we will never reach this point
+    // Because we switched task to the new one, and old task state
+    // holds IP register after "INT" instruction
 
 out:
     return 0;
