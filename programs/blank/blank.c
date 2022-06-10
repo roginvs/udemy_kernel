@@ -6,8 +6,6 @@
 
 int main(int argc, char **argv)
 {
-    printf("My age is %i\n", 98);
-
     char words[] = "hello how are you";
 
     const char *token = strtok(words, " ");
@@ -16,5 +14,8 @@ int main(int argc, char **argv)
         printf("%s\n", token);
         token = strtok(NULL, " ");
     }
-    return 0;
+
+    while (1)
+    {
+    }
 }
