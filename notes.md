@@ -40,6 +40,10 @@ Cleanup task switching, for example:
 Write document with memory ranges, including hardware reserved addresses, kernel base, kernel heap,
 kernel stack, and etc
 
+# TODO
+
+Search code by "experiment_with_paging_flags" and change it
+
 # User memory mapping
 
 No need, we still need kernel memory to be mapped, just because when we change memory table we
