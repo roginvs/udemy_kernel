@@ -10,6 +10,8 @@ int main(int argc, char **argv)
   peachos_process_get_arguments(&arguments);
 
   printf("%i %s\n", arguments.argc, arguments.argv[0]);
+  print(argv[0]);
+  print("did this work?\n");
 
   while (1)
   {

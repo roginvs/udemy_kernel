@@ -44,6 +44,10 @@ kernel stack, and etc
 
 Search code by "experiment_with_paging_flags" and change it
 
+# TODO
+
+Try to inject argv/argv by setting task stack directly
+
 # User memory mapping
 
 No need, we still need kernel memory to be mapped, just because when we change memory table we
