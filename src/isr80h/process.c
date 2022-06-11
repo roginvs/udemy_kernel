@@ -74,6 +74,7 @@ void *isr80h_command7_invoke_system_command(struct interrupt_frame *frame)
     task_switch(process->task);
     task_return(&process->task->registers);
 
+    // Never returns because we already switched to another task
     return 0;
 }
 
