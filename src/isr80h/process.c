@@ -44,6 +44,7 @@ void *isr80h_command7_invoke_system_command(struct interrupt_frame *frame)
 {
 
     struct command_argument *arguments = task_virtual_address_to_physical(task_current(), task_get_stack_item(task_current(), 0));
+    // TODO WTF, why array instead of arguments->argument?
     if (!arguments || strlen(arguments[0].argument) == 0)
     {
         return ERROR(-EINVARG);
