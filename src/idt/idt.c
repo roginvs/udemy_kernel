@@ -77,6 +77,7 @@ void idt_init()
     {
         idt_set(i, interrupt_pointer_table[i]);
     }
+    // We are not using interrupt_pointer_table for those two interrupts? Why?
     idt_set(0, idt_zero);
     idt_set(0x80, isr80h_wrapper);
 
