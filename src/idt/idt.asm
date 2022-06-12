@@ -57,6 +57,9 @@ extern interrupt_handler
         ;   push cs
         ;   push ip
 
+        ; TODO: Interruptions like GP or PagePault also pushes error code.
+        ; This error code must be popped from the stack if we want to continue execution of the user program
+
         ; Pushes the general purpose registers to the stack
         pushad
         ; Interrupt frame end
