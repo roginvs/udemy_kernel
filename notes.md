@@ -144,6 +144,7 @@ info registers ss esp
 print *(uint32_t*)($esp + 4)
 set $edi = 0xAABBCCDD
 x /20xb $esp # This is stack immediately after int instruction, 5 dwords
+x /24xb $esp # This is stack immediately after int 13 (General Protection Fault or Page Fault), 6 dwords, latest is err code
 x /32xb $esp # Same to show addresses where TSS kernel stack begins, 0x600000
 x /32xb $esp # pushad decreased stack pointer by 32 bytes = 8 registers
 x /52xb $esp
