@@ -16,10 +16,5 @@ int main(int argc, char **argv)
     printf("%s\n", argv[i]);
   }
 
-  do_int13();
-
-  while (1)
-  {
-  }
   return 0;
 }
