@@ -69,6 +69,7 @@ void idt_handle_exception()
 
 void idt_clock()
 {
+    // TODO: We registered this using "idt_register_interrupt_callback" so this is not needed
     outb(0x20, 0x20);
 
     // TODO: Function below panic when reaches end of the linked list
