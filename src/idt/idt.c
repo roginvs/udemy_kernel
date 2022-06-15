@@ -71,6 +71,8 @@ void idt_clock()
 {
     outb(0x20, 0x20);
 
+    // TODO: Function below panic when reaches end of the linked list
+
     // Switch to the next task
     task_next();
 }
