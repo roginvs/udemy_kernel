@@ -155,7 +155,7 @@ void kernel_main()
         panic("Failed to load blank.elf\n");
 
     struct command_argument argument;
-    strcpy(argument.argument, "Testing!");
+    strcpy(argument.argument, "A");
     argument.next = 0x00;
 
     process_inject_arguments(process, &argument);
@@ -167,7 +167,7 @@ void kernel_main()
             panic("Failed to load blank.elf\n");
         }
 
-        strcpy(argument.argument, "Abc!");
+        strcpy(argument.argument, "B");
         argument.next = 0x00;
         process_inject_arguments(process, &argument);
     }
