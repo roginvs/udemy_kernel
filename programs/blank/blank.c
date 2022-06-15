@@ -11,9 +11,12 @@ void do_int13()
 }
 int main(int argc, char **argv)
 {
-  for (int i = 0; i < argc; i++)
+  while (1)
   {
-    printf("%s\n", argv[i]);
+    for (int i = 0; i < argc; i++)
+    {
+      printf("%s", argv[i]);
+    }
   }
 
   return 0;
