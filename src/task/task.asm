@@ -49,6 +49,7 @@ task_return:
     
 ; void restore_general_purpose_registers(struct registers* regs);
 restore_general_purpose_registers:
+    ; There is no need to save ebp at all, we write there new value
     push ebp
     mov ebp, esp
     mov ebx, [ebp+8]
@@ -59,7 +60,7 @@ restore_general_purpose_registers:
     mov ecx, [ebx+20]
     mov eax, [ebx+24]
     mov ebx, [ebx+12]
-    add esp, 4
+    add esp, 4 ; Move stack back instead of "pop ebp"
     ret
 
 ; void user_registers()
