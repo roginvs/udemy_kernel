@@ -23,7 +23,7 @@ objdump --disassemble-all -M intel syswrite.elf | less
 int syscall_3(int func_id, size_t arg1, size_t arg2, size_t arg3); /* Prototype */
 int syscall_1(int func_id, size_t arg1); /* Prototype */
 
-volatile char str[] = "Hello world!\n";
+volatile char str[] = "Hello world from data!\n";
 
 
 void _start(){
@@ -35,7 +35,9 @@ void _start(){
     
 
     syscall_3(4 /* sys_write */, 1 /* stdout */, (size_t)&str, sizeof(str));
-    //syscall_3(1 /* sys_write */, 1 /* stdout */, (size_t)0, sizeof(0));
+    
+    volatile char str2[] = "Hello world from stack!\n";
+    syscall_3(4 /* sys_write */, 1 /* stdout */, (size_t)&str2, sizeof(str2));
     
     syscall_1(1 /* exit */ , 0 /* exit code */);
     return; // Never returns
