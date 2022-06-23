@@ -39,21 +39,26 @@ void _start(){
 int syscall_3(int func_id, size_t arg1, size_t arg2, size_t arg3); /* Prototype */
 int syscall_1(int func_id, size_t arg1); /* Prototype */
 
+
 __asm__( /* Assembly function body */
 "syscall_3:\n"
-"  mov eax, [esp+4]\n"
-"  mov ebx, [esp+8]\n"
-"  mov ecx, [esp+12]\n"
-"  mov edx, [esp+16]\n"
+"  push ebx\n" // We have to save EBX accorting to x86 calling convention. EAX, ECX and EDX can be modified
+"  mov eax, [esp+8]\n"
+"  mov ebx, [esp+12]\n"
+"  mov ecx, [esp+16]\n"
+"  mov edx, [esp+20]\n"
 "  int 0x80\n"
+"  pop ebx\n"
 "  ret\n"
 );
 
 __asm__( /* Assembly function body */
 "syscall_1:\n"
-"  mov eax, [esp+4]\n"
-"  mov ebx, [esp+8]\n"
+"  push ebx\n"
+"  mov eax, [esp+8]\n"
+"  mov ebx, [esp+12]\n"
 "  int 0x80\n"
+"  pop ebx\n"
 "  ret\n"
 );
 
