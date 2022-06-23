@@ -21,6 +21,7 @@ objdump --disassemble-all -M intel syswrite.elf | less
 #include <stddef.h>
 
 int main();
+
 void _start(){
        __asm__(
         "nop\n"
@@ -54,10 +55,10 @@ int main()
         "nop\n"
     );
 
-    //volatile char str[] = "Hello world!\n";
+    volatile char str[] = "Hello world!\n";
 
-    //syscall_3(1 /* sys_write */, 1 /* stdout */, (size_t)str, sizeof(str));
-    syscall_3(1 /* sys_write */, 1 /* stdout */, (size_t)0, sizeof(0));
+    syscall_3(1 /* sys_write */, 1 /* stdout */, (size_t)str, sizeof(str));
+    //syscall_3(1 /* sys_write */, 1 /* stdout */, (size_t)0, sizeof(0));
     
     return 0;
 };
