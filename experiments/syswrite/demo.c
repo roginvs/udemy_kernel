@@ -20,24 +20,27 @@ objdump --disassemble-all -M intel syswrite.elf | less
 //#include <sys/syscall.h>
 #include <stddef.h>
 
-int main();
-
-void _start(){
-    /*
-       __asm__(
-        "nop\n"
-        "nop\n"
-    );
-       __asm__(
-        "nop\n"
-        "nop\n"
-    );
-    */
-    main();
-}
-
 int syscall_3(int func_id, size_t arg1, size_t arg2, size_t arg3); /* Prototype */
 int syscall_1(int func_id, size_t arg1); /* Prototype */
+
+volatile char str[] = "Hello world!\n";
+
+
+void _start(){
+    __asm__(
+        "nop\n"
+        "nop\n"
+    );
+
+    
+
+    syscall_3(4 /* sys_write */, 1 /* stdout */, (size_t)&str, sizeof(str));
+    //syscall_3(1 /* sys_write */, 1 /* stdout */, (size_t)0, sizeof(0));
+    
+    syscall_1(1 /* exit */ , 0 /* exit code */);
+    return; // Never returns
+}
+
 
 
 __asm__( /* Assembly function body */
@@ -62,23 +65,4 @@ __asm__( /* Assembly function body */
 "  ret\n"
 );
 
-
-volatile char str[] = "Hello world!\n";
-
-
-int main()
-{
-    __asm__(
-        "nop\n"
-        "nop\n"
-    );
-
-    
-
-    syscall_3(4 /* sys_write */, 1 /* stdout */, (size_t)&str, sizeof(str));
-    //syscall_3(1 /* sys_write */, 1 /* stdout */, (size_t)0, sizeof(0));
-    
-    syscall_1(1 /* exit */ , 0 /* exit code */);
-    return 0;
-};
 
