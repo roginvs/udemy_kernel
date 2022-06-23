@@ -8,7 +8,7 @@ all: ${FILES}
 
 ./build/demo.o: ./demo.c
 	mkdir -p build
-	gcc ${INCLUDES} -I./ $(FLAGS) -std=gnu99 -c ./demo.c -o ./build/demo.o
+	gcc ${INCLUDES} -I./ $(FLAGS) -masm=intel -std=gnu99 -c ./demo.c -o ./build/demo.o
 
 clean:	
 	rm -rf ${FILES}

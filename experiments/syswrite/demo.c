@@ -23,6 +23,7 @@ objdump --disassemble-all -M intel syswrite.elf | less
 int main();
 
 void _start(){
+    /*
        __asm__(
         "nop\n"
         "nop\n"
@@ -31,21 +32,33 @@ void _start(){
         "nop\n"
         "nop\n"
     );
+    */
     main();
 }
 
 int syscall_3(int func_id, size_t arg1, size_t arg2, size_t arg3); /* Prototype */
+int syscall_1(int func_id, size_t arg1); /* Prototype */
 
 __asm__( /* Assembly function body */
 "syscall_3:\n"
-//"  mov $100,%eax\n"
-
-"  mov %eax, 1\n"
-"  mov %ebx, 33\n"
-"  int $0x80\n"
+"  mov eax, [esp+4]\n"
+"  mov ebx, [esp+8]\n"
+"  mov ecx, [esp+12]\n"
+"  mov edx, [esp+16]\n"
+"  int 0x80\n"
 "  ret\n"
 );
 
+__asm__( /* Assembly function body */
+"syscall_1:\n"
+"  mov eax, [esp+4]\n"
+"  mov ebx, [esp+8]\n"
+"  int 0x80\n"
+"  ret\n"
+);
+
+
+volatile char str[] = "Hello world!\n";
 
 
 int main()
@@ -55,11 +68,12 @@ int main()
         "nop\n"
     );
 
-    volatile char str[] = "Hello world!\n";
+    
 
-    syscall_3(1 /* sys_write */, 1 /* stdout */, (size_t)str, sizeof(str));
+    syscall_3(4 /* sys_write */, 1 /* stdout */, (size_t)&str, sizeof(str));
     //syscall_3(1 /* sys_write */, 1 /* stdout */, (size_t)0, sizeof(0));
     
+    syscall_1(1 /* exit */ , 0 /* exit code */);
     return 0;
 };
 
