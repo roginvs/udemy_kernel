@@ -256,8 +256,6 @@ int task_init(struct task *task, struct process *process)
     task->registers.cs = USER_CODE_SEGMENT;
     task->registers.esp = PEACHOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START;
 
-    task->registers.flags = 0x202;
-
     task->process = process;
 
     return 0;
