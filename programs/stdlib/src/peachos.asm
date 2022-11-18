@@ -13,6 +13,19 @@ global peachos_process_get_arguments:function
 global peachos_system:function
 global peachos_exit:function
 
+global infinite_loop:function
+
+infinite_loop:
+    mov eax, 0
+    cmp eax, 0
+    .loop
+    nop
+    jz .loop
+    nop
+    nop
+    nop
+    ret
+
 ; void print(const char* filename)
 print:
     push ebp

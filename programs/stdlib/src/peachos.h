@@ -16,6 +16,8 @@ struct process_arguments
 };
 
 void print(const char *filename);
+void infinite_loop();
+
 int peachos_getkey();
 
 void *peachos_malloc(size_t size);

@@ -17,6 +17,9 @@ int main(int argc, char **argv)
     {
       print(argv[i]);
     }
+    print("Loop started.");
+    infinite_loop();
+    print("Oh-la-la!");
     for (int i = 0; i < 10000000; i++)
     {
       //
